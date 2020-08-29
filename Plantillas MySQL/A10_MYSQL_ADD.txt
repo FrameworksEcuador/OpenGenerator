@@ -1,0 +1,64 @@
+delete from template where te_id IN ('A10_MYSQL_QRY');
+INSERT INTO `generator`.`template`
+(`te_id`,`te_code`,`te_file`,`te_extension`)
+VALUES
+("A10_MYSQL_QRY",
+"drop procedure if exists <<<NOMBRE-ESQUEMA>>>.<<<NOMBRE-TABLA>>>_ADD;
+ delimiter ##
+ 
+ CREATE Procedure <<<NOMBRE-ESQUEMA>>>.<<<NOMBRE-TABLA>>>_ADD
+ /****************************************************************************** 
+  Stored Procedure: <<<NOMBRE-TABLA>>>_ADD										 
+  Archivo         : <<<NOMBRE-TABLA>>>_ADD.sql									 
+  Diseñado por    : FRAMEWORKS CIA LTDA										 
+  Módulo          : <<<NOMBRE-APLICACION>>>												 
+  Descripción     : Procedimiento para agregar datos a <<<NOMBRE-TABLA>>>		
+ 				 																 
+ ****************************************************************************** 
+ 	Este programa es parte del paquete de <<<NOMBRE-APLICACION>>>, propiedad de Frameworks Cia Ltda
+ 	Su uso no autorizado queda expresamente prohibido asi como					
+ 	cualquier alteracion o agregado hecho por alguno de sus						
+ 	usuarios sin el debido consentimiento por escrito de FRAMEWORKS CIA LTDA
+ 	
+ ****************************************************************************** 
+  Fecha de escritura: <<<FECHA-CREACION>>>										 
+  Autor             : <<<AUTOR>>>												 
+ ****************************************************************************** 
+  MODIFICACIONES																 
+  Fecha	Autor	Razón														 
+ 																				 
+ ******************************************************************************/
+ (
+ 	<<<INCLUYE_TRANSACTOR>>>
+ 	<<<CAMPOS-INPUT-TIPO>>>,	
+ 	
+ 	OUT O_RETVAL		INT,
+ 	OUT O_RETMSG		VARCHAR(255)
+ )
+ BEGIN
+ 	DECLARE W_SECUENCIAL 	INT;
+     DECLARE exit handler FOR SQLEXCEPTION
+     BEGIN
+ 		GET DIAGNOSTICS CONDITION 1 O_RETVAL = MYSQL_ERRNO, O_RETMSG = MESSAGE_TEXT;
+     END;
+ 
+ 	SET O_RETVAL = 0;
+ 	SET O_RETMSG = '';
+ 	START TRANSACTION;
+ 		INSERT INTO <<<NOMBRE-TABLA-FULL>>>
+ 		( 
+ 		<<<CAMPOS-NOMBRE>>>
+ 		<<<INCLUYE-ADD-CONCURRENCIA-CAMPO>>>
+ 		)
+ 		VALUES
+ 		( 
+ 		<<<CAMPOS-INPUT-NOMBRE>>> 
+ 		<<<INCLUYE-ADD-CONCURRENCIA-CAMPO-VALOR>>>
+ 		);
+ 	COMMIT;
+     SET W_SECUENCIAL = last_insert_id();
+ 	SELECT <<<CAMPOS-NOMBRE>>> 
+     FROM <<<NOMBRE-TABLA-FULL>>> WHERE <<<CAMPOS_PK_NOMBRE_INPUT_WHERE>>>; #= W_SECUENCIAL;
+ END##
+ DELIMITER ;
+","<<<NOMBRE-TABLA>>>_ADD","sql");

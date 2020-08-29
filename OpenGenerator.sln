@@ -3,7 +3,28 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenGeneratorSVC", "OpenGeneratorSVC\OpenGeneratorSVC.csproj", "{1E13733C-933A-454B-97ED-8FB93E4E590B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenGeneratorSVC", "OpenGeneratorSVC\OpenGeneratorSVC.csproj", "{1E13733C-933A-454B-97ED-8FB93E4E590B}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "OpenGeneratorWeb", "OpenGeneratorWeb\", "{E01B0DA4-11E3-4887-BD56-CC35A198F0D7}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_10454"
+		Debug.AspNetCompiler.PhysicalPath = "OpenGeneratorWeb\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_10454\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_10454"
+		Release.AspNetCompiler.PhysicalPath = "OpenGeneratorWeb\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_10454\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "10454"
+		SlnRelativePath = "OpenGeneratorWeb\"
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +36,10 @@ Global
 		{1E13733C-933A-454B-97ED-8FB93E4E590B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E13733C-933A-454B-97ED-8FB93E4E590B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E13733C-933A-454B-97ED-8FB93E4E590B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E01B0DA4-11E3-4887-BD56-CC35A198F0D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E01B0DA4-11E3-4887-BD56-CC35A198F0D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E01B0DA4-11E3-4887-BD56-CC35A198F0D7}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{E01B0DA4-11E3-4887-BD56-CC35A198F0D7}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

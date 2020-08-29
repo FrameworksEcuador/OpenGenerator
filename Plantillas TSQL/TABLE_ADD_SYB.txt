@@ -1,0 +1,85 @@
+
+/****************************************************************************** 
+ Stored Procedure: <<<NOMBRE-TABLA-MAY>>>_ADD										 
+ Archivo         : <<<NOMBRE-TABLA-MAY>>>_ADD.sql									 
+ Diseñado por    : FRAMEWORKS CIA LTDA										 
+ Módulo          : <<<NOMBRE-NAMESPACE>>>												 
+ Descripción     : Procedimiento para agregar datos a <<<NOMBRE-TABLA>>>		
+				 																 
+****************************************************************************** 
+ Este programa es parte del paquete de <<<NOMBRE-NAMESPACE>>> propiedad			
+ de Frameworks Cia Ltda.														
+ Su uso no autorizado queda expresamente prohibido asi como					
+ cualquier alteracion o agregado hecho por alguno de sus						
+ usuarios sin el debido consentimiento por escrito de Frameworks Cía. Ltda.																					 
+****************************************************************************** 
+ Fecha de escritura: <<<FECHA-CREACION>>>										 
+ Autor           : <<<AUTOR>>>												 
+****************************************************************************** 
+ MODIFICACIONES																 
+ Fecha	Autor	Razón														 
+																				 
+******************************************************************************/
+
+if exists (select * from sysobjects where name = '<<<NOMBRE-TABLA-MAY>>>_ADD')
+	drop proc <<<NOMBRE-TABLA-MAY>>>_ADD
+go
+
+CREATE Procedure [<<<NOMBRE-TABLA-MAY>>>_ADD]
+(	----PARÁMETROS OBLIGATORIOS
+	@I_USUARIO	   VARCHAR(64),
+	@I_TRANSACCION INT,
+	<<<CAMPOS-INPUT-TIPO-MAY>>>
+)
+AS
+BEGIN
+	DECLARE 
+		@W_SECUENCIAL INT
+BEGIN TRAN
+    --Secuencial Transaccional
+		EXEC SEQNOS_SIG 
+		     @i_usuario=@I_USUARIO ,
+	         @i_tabla='<<<NOMBRE-TABLA-FULL>>>', 
+	         @o_siguiente=@W_SECUENCIAL
+		
+		IF @W_SECUENCIAL IS NULL
+		BEGIN
+		     EXEC ERROR_GEN @I_USUARIO, @I_TRANSACCION, 20001, '<<<NOMBRE-TABLA-MAY>>>_ADD'
+		     return 1
+		
+		END
+    
+	--Recomendacion: Verificar los campos de concurrencia , utilizar getDate		
+		INSERT INTO <<<NOMBRE-TABLA-FULL>>>
+        ( 
+	<<<CAMPOS-NOMBRE>>>
+	<<<INCLUYE-ADD-CONCURRENCIA-CAMPO>>>
+        )
+		VALUES
+		(  
+	<<<CAMPOS-INPUT-NOMBRE-MAY>>> 
+	<<<INCLUYE-ADD-CONCURRENCIA-CAMPO-VALOR>>>
+		)
+
+    IF @@error<>0
+    BEGIN	
+		EXEC ERROR_GEN @I_USUARIO, @I_TRANSACCION, 20003, '<<<NOMBRE-TABLA-MAY>>>_ADD'
+		return 1
+		
+	END 
+	
+	SELECT 
+		<<<CAMPOS-NOMBRE>>>
+		<<<INCLUYE-ADD-CONCURRENCIA-CAMPO>>>
+    FROM 
+		<<<NOMBRE-TABLA-FULL>>>
+	WHERE
+		<<<CAMPOS-PK-NOMBRE>>>=@W_SECUENCIAL
+				
+COMMIT TRAN
+
+	RETURN 0
+END
+GO
+
+

@@ -1,0 +1,61 @@
+/******************************************************************************
+	Archivo         :	api<<<NOMBRE-TABLA-CAMEL>>>.svc.cs							
+	Diseñado por	:	FRAMEWORKS CIA LTDA										
+	Módulo			:	<<<NOMBRE-NAMESPACE>>>									
+	Descripción	    :	Web Service API de <<<NOMBRE-TABLA-CAMEL>>>
+					en el Aplicativo Web		    																				
+******************************************************************************
+	Este programa es parte del paquete de <<<NOMBRE-NAMESPACE>>>
+	propiedad de Frameworks Cia Ltda.														
+	Su uso no autorizado queda expresamente prohibido asi como					
+	cualquier alteracion o agregado hecho por alguno de sus						
+	usuarios sin el debido consentimiento por escrito de Frameworks Cía. Ltda.	
+******************************************************************************
+	Fecha de Escritura:	<<<FECHA-CREACION>>>									
+	Autor		  :	<<<AUTOR>>>													
+******************************************************************************
+	MODIFICACIONES																
+	Fecha		Autor		     Razón										    
+                                                                              
+******************************************************************************/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.ServiceModel;
+using System.Text;
+using System.ServiceModel.Web;
+
+namespace <<<NOMBRE-NAMESPACE>>>.api
+{
+    public class api<<<NOMBRE-TABLA-CAMEL>>> : Iapi<<<NOMBRE-TABLA-CAMEL>>>
+    {
+        [WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, UriTemplate = "<<<NOMBRE-TABLA-CAMEL>>>Crear", BodyStyle = WebMessageBodyStyle.WrappedResponse)]
+        public <<<NOMBRE-TABLA-CAMEL>>>Svc.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>Crear(<<<NOMBRE-TABLA-CAMEL>>>Svc.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>, out <<<NOMBRE-TABLA-CAMEL>>>Svc.clsResultado resultado)
+        {
+			<<<NOMBRE-TABLA-CAMEL>>>Svc.<<<NOMBRE-TABLA-CAMEL>>>Client svc = new <<<NOMBRE-TABLA-CAMEL>>>Svc.<<<NOMBRE-TABLA-CAMEL>>>Client();
+			return svc.<<<NOMBRE-TABLA-CAMEL>>>Crear(<<<NOMBRE-TABLA-CAMEL>>>, out resultado);
+        }
+
+        [WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, UriTemplate = "<<<NOMBRE-TABLA-CAMEL>>>Consultar", BodyStyle = WebMessageBodyStyle.WrappedResponse)]
+        public <<<NOMBRE-TABLA-CAMEL>>>Svc.cls<<<NOMBRE-TABLA-CAMEL>>>[] <<<NOMBRE-TABLA-CAMEL>>>Consultar(<<<NOMBRE-TABLA-CAMEL>>>Svc.clsFiltro filtro, out <<<NOMBRE-TABLA-CAMEL>>>Svc.clsResultado resultado)
+        {
+			<<<NOMBRE-TABLA-CAMEL>>>Svc.<<<NOMBRE-TABLA-CAMEL>>>Client svc = new <<<NOMBRE-TABLA-CAMEL>>>Svc.<<<NOMBRE-TABLA-CAMEL>>>Client();
+			return svc.<<<NOMBRE-TABLA-CAMEL>>>Consultar(filtro, out resultado);
+        }
+
+        [WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, UriTemplate = "<<<NOMBRE-TABLA-CAMEL>>>Actualizar", BodyStyle = WebMessageBodyStyle.WrappedResponse)]
+        public <<<NOMBRE-TABLA-CAMEL>>>Svc.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>Actualizar(<<<NOMBRE-TABLA-CAMEL>>>Svc.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>, out <<<NOMBRE-TABLA-CAMEL>>>Svc.clsResultado resultado)
+        {
+            <<<NOMBRE-TABLA-CAMEL>>>Svc.<<<NOMBRE-TABLA-CAMEL>>>Client svc = new <<<NOMBRE-TABLA-CAMEL>>>Svc.<<<NOMBRE-TABLA-CAMEL>>>Client();
+			return svc.<<<NOMBRE-TABLA-CAMEL>>>Actualizar(<<<NOMBRE-TABLA-CAMEL>>>, out resultado);
+        }
+
+        [WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, UriTemplate = "<<<NOMBRE-TABLA-CAMEL>>>Eliminar", BodyStyle = WebMessageBodyStyle.WrappedResponse)]
+        public int <<<NOMBRE-TABLA-CAMEL>>>Eliminar(<<<NOMBRE-TABLA-CAMEL>>>Svc.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>, out <<<NOMBRE-TABLA-CAMEL>>>Svc.clsResultado resultado)
+        {
+            <<<NOMBRE-TABLA-CAMEL>>>Svc.<<<NOMBRE-TABLA-CAMEL>>>Client svc = new <<<NOMBRE-TABLA-CAMEL>>>Svc.<<<NOMBRE-TABLA-CAMEL>>>Client();
+			return svc.<<<NOMBRE-TABLA-CAMEL>>>Eliminar(<<<NOMBRE-TABLA-CAMEL>>>, out resultado);
+        }
+    }
+}

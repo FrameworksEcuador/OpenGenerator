@@ -1,0 +1,68 @@
+/////////////////////////////////////////
+/// SECCION DE FACTORY CORRESPONDIENTE A <<<NOMBRE-TABLA-CAMEL>>>
+/// COPIAR EN EL FACTORY GENERAL
+/////////////////////////////////////////
+
+app.factory('fac<<<NOMBRE-TABLA-CAMEL>>>', function ($http) {
+    return {
+		// Creación del registro de <<<NOMBRE-TABLA-CAMEL>>> 
+		<<<NOMBRE-TABLA-CAMEL>>>Crear: function (<<<NOMBRE-TABLA-CAMEL>>>, callbackOk, callbackErr) {
+            var credencial = JSON.parse(sessionStorage.getItem('credencial'));
+            <<<NOMBRE-TABLA-CAMEL>>>.Identificador = credencial.Identificador;
+            $http.post('api/api<<<NOMBRE-TABLA-CAMEL>>>.svc/<<<NOMBRE-TABLA-CAMEL>>>Crear', <<<NOMBRE-TABLA-CAMEL>>>).
+            success(function (data, status, headers, config) {
+                if (data.resultado.Resultado == 0)
+                    callbackOk(data);
+                else callbackErr(data, status, headers, config);
+            }).
+            error(function (data, status, headers, config) {
+                callbackErr(data, status, headers, config);
+            })
+        },
+		
+		// Actualización del registro de <<<NOMBRE-TABLA-CAMEL>>> 
+		<<<NOMBRE-TABLA-CAMEL>>>Actualizar: function (<<<NOMBRE-TABLA-CAMEL>>>, callbackOk, callbackErr) {
+            var credencial = JSON.parse(sessionStorage.getItem('credencial'));
+            <<<NOMBRE-TABLA-CAMEL>>>.Identificador = credencial.Identificador;
+            $http.post('api/api<<<NOMBRE-TABLA-CAMEL>>>.svc/<<<NOMBRE-TABLA-CAMEL>>>Actualizar', <<<NOMBRE-TABLA-CAMEL>>>).
+            success(function (data, status, headers, config) {
+                if (data.resultado.Resultado == 0)
+                    callbackOk(data);
+                else callbackErr(data, status, headers, config);
+            }).
+            error(function (data, status, headers, config) {
+                callbackErr(data, status, headers, config);
+            })
+        },
+		
+		// Eliminación del registro de <<<NOMBRE-TABLA-CAMEL>>> 
+		<<<NOMBRE-TABLA-CAMEL>>>Eliminar: function (<<<NOMBRE-TABLA-CAMEL>>>, callbackOk, callbackErr) {
+            var credencial = JSON.parse(sessionStorage.getItem('credencial'));
+            <<<NOMBRE-TABLA-CAMEL>>>.Identificador = credencial.Identificador;
+            $http.post('api/api<<<NOMBRE-TABLA-CAMEL>>>.svc/<<<NOMBRE-TABLA-CAMEL>>>Eliminar', <<<NOMBRE-TABLA-CAMEL>>>).
+            success(function (data, status, headers, config) {
+                if (data.resultado.Resultado == 0)
+                    callbackOk(data);
+                else callbackErr(data, status, headers, config);
+            }).
+            error(function (data, status, headers, config) {
+                callbackErr(data, status, headers, config);
+            })
+        },
+	
+        // Consulta de <<<NOMBRE-TABLA-CAMEL>>> 
+        <<<NOMBRE-TABLA-CAMEL>>>Consultar: function (filtro, callbackOk, callbackErr) {
+            $http.post('api/api<<<NOMBRE-TABLA-CAMEL>>>.svc/<<<NOMBRE-TABLA-CAMEL>>>Consultar', filtro).
+            success(function (data, status, headers, config) {
+                if (data.resultado.Resultado == 0) {
+                    callbackOk(data);
+                } else {
+                    callbackErr(data.resultado.Mensaje, data.resultado.Resultado, null, null);
+                }
+            }).
+            error(function (data, status, headers, config) {
+                callbackErr(data, status, headers, config);
+            })
+        }
+    }
+});

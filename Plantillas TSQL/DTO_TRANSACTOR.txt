@@ -1,0 +1,36 @@
+/*****************************************************************************************************
+	Archivo         :	cls<<<NOMBRE-TABLA-CAMEL>>>.cs    										
+	Diseñado por	:	FRAMEWORKS CIA LTDA										
+	Módulo			:	<<<NOMBRE-NAMESPACE>>>												
+	Descripción	    :	Datos de  <<<NOMBRE-TABLA-CAMEL>>> CON TRANSACTOR		                    
+																				
+*****************************************************************************************************
+	Este programa es parte del paquete de <<<NOMBRE-NAMESPACE>>> propiedad			
+	de Frameworks Cia Ltda.														
+	Su uso no autorizado queda expresamente prohibido asi como					
+	cualquier alteracion o agregado hecho por alguno de sus						
+	usuarios sin el debido consentimiento por escrito de Frameworks Cía. Ltda.	
+*****************************************************************************************************
+	Fecha de Escritura:	<<<FECHA-CREACION>>>											
+	Autor		  :	<<<AUTOR>>>										
+*****************************************************************************************************
+	MODIFICACIONES																
+	Fecha		Autor		     Razón										    
+                                                                              
+*****************************************************************************************************/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Runtime.Serialization;
+
+namespace <<<NOMBRE-NAMESPACE>>>.DTO
+{
+	[DataContract (Name="cls<<<NOMBRE-TABLA-CAMEL>>>", Namespace="http://schemas.frameworks.com.ec/<<<NOMBRE-NAMESPACE>>>/<<<AÑO>>>/<<<MES>>>")]
+	public class cls<<<NOMBRE-TABLA-CAMEL>>>
+	{
+<<<CAMPOS-DTO>>>
+		[DataMember]
+		public string Identificador { get; set; }   // Identificador de la sesión de transactor
+	}
+}

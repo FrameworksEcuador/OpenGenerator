@@ -1,0 +1,93 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+if exists (select * from sysobjects where name = '<<<NOMBRE-TABLA>>>_ADD')
+	drop proc <<<NOMBRE-TABLA>>>_ADD
+go
+
+CREATE Procedure [<<<NOMBRE-TABLA>>>_ADD]
+/****************************************************************************** 
+ Stored Procedure: <<<NOMBRE-TABLA>>>_ADD										 
+ Archivo         : <<<NOMBRE-TABLA>>>_ADD.sql									 
+ Diseñado por    : FRAMEWORKS CIA LTDA										 
+ Módulo          : <<<NOMBRE-NAMESPACE>>>												 
+ Descripción     : Procedimiento para agregar datos a <<<NOMBRE-TABLA>>>		
+				 																 
+****************************************************************************** 
+																				 
+****************************************************************************** 
+ Fecha de escritura: <<<FECHA-CREACION>>>										 
+ Autor           : <<<AUTOR>>>												 
+****************************************************************************** 
+ MODIFICACIONES																 
+ Fecha	Autor	Razón														 
+																				 
+******************************************************************************/
+(	----PARÁMETROS OBLIGATORIOS
+	<<<INCLUYE_TRANSACTOR>>>
+	
+	<<<CAMPOS-INPUT-TIPO>>>,	
+	
+	@O_RETVAL		BIGINT OUTPUT,
+	@O_RETMSG		VARCHAR(MAX) OUTPUT
+)
+AS
+	DECLARE 
+		@w_rowcount float,
+		@ERRORINFO VARCHAR(MAX)
+BEGIN
+
+	SET @O_RETVAL = 0
+	SET @O_RETMSG = ''
+
+	BEGIN TRY		
+
+		INSERT INTO [dbo].<<<NOMBRE-TABLA-FULL>>>
+        ( 
+	<<<CAMPOS-NOMBRE>>>
+	<<<INCLUYE-ADD-CONCURRENCIA-CAMPO>>>
+        )
+        OUTPUT INSERTED.*
+		VALUES
+		(  
+	<<<CAMPOS-INPUT-NOMBRE>>> 
+	<<<INCLUYE-ADD-CONCURRENCIA-CAMPO-VALOR>>>
+		)
+
+	END TRY
+	BEGIN CATCH
+		
+		if ERROR_NUMBER() = 547 -- Error de Integridad Referencial
+		begin
+			exec fw_security..error_qry
+					@i_num	 = 141061,
+					@i_stored = '<<<NOMBRE-TABLA>>>_ADD'
+		end
+		else IF ERROR_NUMBER() = 2627	-- CLAVE DUPLICADA
+		BEGIN
+			exec fw_security..error_qry
+					@i_num	 = 141051,
+					@i_stored = '<<<NOMBRE-TABLA>>>_ADD'
+		END
+
+		SET @ERRORINFO = CONCAT(ERROR_LINE(),  ' - ' , ERROR_MESSAGE(),  ' - ' ,  ERROR_NUMBER(),  ' - ' ,  
+						ERROR_PROCEDURE(),  ' - ' ,  ERROR_SEVERITY(),  ' - ' , ERROR_STATE(), ' - ', @O_RETVAL, ' - ', @O_RETMSG)
+
+		<<<LOG-INTERNO-CON-TRANSACTOR>>>
+		
+		SET @O_RETMSG = ERROR_MESSAGE()
+		SET @O_RETVAL = ERROR_NUMBER()
+		
+	END CATCH
+
+	RETURN
+
+END
+
+
+
+GO
+
+

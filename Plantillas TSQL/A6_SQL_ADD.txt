@@ -1,0 +1,91 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+if exists (select * from sysobjects where name = '<<<NOMBRE-TABLA>>>_ADD')
+	drop proc <<<NOMBRE-TABLA>>>_ADD
+go
+
+CREATE Procedure [<<<NOMBRE-TABLA>>>_ADD]
+/****************************************************************************** 
+ Stored Procedure: <<<NOMBRE-TABLA>>>_ADD										 
+ Archivo         : <<<NOMBRE-TABLA>>>_ADD.sql									 
+ Diseñado por    : FRAMEWORKS CIA LTDA										 
+ Módulo          : <<<NOMBRE-NAMESPACE>>>												 
+ Descripción     : Procedimiento para agregar datos a <<<NOMBRE-TABLA>>>		
+				 																 
+****************************************************************************** 
+	Este programa es parte del paquete de <<<NOMBRE-NAMESPACE>>>, propiedad de Frameworks Cia Ltda
+	Su uso no autorizado queda expresamente prohibido asi como					
+	cualquier alteracion o agregado hecho por alguno de sus						
+	usuarios sin el debido consentimiento por escrito de FRAMEWORKS CIA LTDA
+	
+****************************************************************************** 
+ Fecha de escritura: <<<FECHA-CREACION>>>										 
+ Autor             : <<<AUTOR>>>												 
+****************************************************************************** 
+ MODIFICACIONES																 
+ Fecha	Autor	Razón														 
+																				 
+******************************************************************************/
+(	----PARÁMETROS OBLIGATORIOS
+	<<<INCLUYE_TRANSACTOR>>>
+	<<<CAMPOS-INPUT-TIPO>>>,	
+	
+	@O_RETVAL		BIGINT OUTPUT,
+	@O_RETMSG		VARCHAR(MAX) OUTPUT
+)
+AS
+	DECLARE @W_ROWCOUNT		FLOAT,
+			@W_SECUENCIAL 	BIGINT
+BEGIN
+	SET @O_RETVAL = 0
+	SET @O_RETMSG = ''
+	BEGIN TRY		
+		IF @@NESTLEVEL <= 1 BEGIN TRAN
+			--SIGUIENTE SECUENCIAL DE LA TABLA
+			EXEC SECUENCIAL_SIG 
+				 @i_tabla='<<<NOMBRE-TABLA-FULL>>>',
+				 @o_secuencial=@W_SECUENCIAL OUT
+			IF @W_SECUENCIAL IS NULL
+			BEGIN
+				SELECT @O_RETVAL = 1, @O_RETMSG = 'SQL.10004: <<<NOMBRE-TABLA>>>_ADD: No se puede crear el secuencial'
+				IF @@NESTLEVEL <= 1 ROLLBACK TRAN
+				return 1
+			END
+			
+			INSERT INTO [dbo].<<<NOMBRE-TABLA-FULL>>>
+			( 
+			<<<CAMPOS-NOMBRE>>>
+			<<<INCLUYE-ADD-CONCURRENCIA-CAMPO>>>
+			)
+			OUTPUT INSERTED.*
+			VALUES
+			( @W_SECUENCIAL, 
+			<<<CAMPOS-INPUT-NOMBRE>>> 
+			<<<INCLUYE-ADD-CONCURRENCIA-CAMPO-VALOR>>>
+			)
+		IF XACT_STATE() > 0 AND @@NESTLEVEL <= 1 COMMIT TRAN
+	END TRY
+	BEGIN CATCH
+		IF XACT_STATE() > 0 AND @@NESTLEVEL <= 1 ROLLBACK TRAN
+		if ERROR_NUMBER() = 547 -- Error de Integridad Referencial
+		begin
+			SELECT @O_RETVAL = 1, @O_RETMSG = 'SQL.10005: <<<NOMBRE-TABLA>>>_ADD: Error de Integridad Referencial'
+			RETURN
+		end
+		else IF ERROR_NUMBER() = 2627	-- CLAVE DUPLICADA
+		BEGIN
+			SELECT @O_RETVAL = 1, @O_RETMSG = 'SQL.10006: <<<NOMBRE-TABLA>>>_ADD: Error de Clave Duplicada'
+			RETURN
+		END
+
+		SET @O_RETMSG = 'SQL.10010: ' + ERROR_MESSAGE()
+		SET @O_RETVAL = ERROR_NUMBER()
+		
+	END CATCH
+
+	RETURN
+END
+GO

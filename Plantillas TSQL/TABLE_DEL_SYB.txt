@@ -1,0 +1,70 @@
+/****************************************************************************** 
+ Stored procedure: <<<NOMBRE-TABLA-MAY>>>_DEL										 
+ Archivo         : <<<NOMBRE-TABLA-MAY>>>_DEL.sql									 
+ Diseñado por    : FRAMEWORKS CIA LTDA										 
+ Módulo 		   : <<<NOMBRE-NAMESPACE>>>												 
+ Descripción     : Procedimiento para eliminar datos de <<<NOMBRE-TABLA>>>	
+				 																 
+****************************************************************************** 
+ Este programa es parte del paquete de <<<NOMBRE-NAMESPACE>>> propiedad			
+ de Frameworks Cia Ltda.														
+ Su uso no autorizado queda expresamente prohibido asi como					
+ cualquier alteracion o agregado hecho por alguno de sus						
+ usuarios sin el debido consentimiento por escrito de Frameworks Cía. Ltda.	
+																				 
+****************************************************************************** 
+ Fecha de Escritura: <<<FECHA-CREACION>>>										 
+ Autor           : <<<AUTOR>>>												 
+****************************************************************************** 
+ Modificaciones																 
+ Fecha	Autor	Razón														 
+																				 
+******************************************************************************/
+if exists (select * from sysobjects where name = '<<<NOMBRE-TABLA-MAY>>>_DEL')
+	drop proc <<<NOMBRE-TABLA-MAY>>>_DEL
+go
+
+CREATE Procedure [<<<NOMBRE-TABLA-MAY>>>_DEL]
+(	----PARÁMETROS OBLIGATORIOS
+    @I_USUARIO	   VARCHAR(64),
+	@I_TRANSACCION INT,
+	@I_VERSION	   DATETIME = NULL,
+	<<<CAMPOS-PK-INPUT-TIPO-MAY>>>
+)
+AS
+BEGIN
+	DECLARE 
+		@W_VERSION DATETIME
+
+BEGIN TRAN		
+		SELECT 
+			@W_VERSION = <<<INCLUYE-UPD-CONCURRENCIA-CAMPO>>>
+		FROM 
+			<<<NOMBRE-TABLA-FULL>>> 
+		WHERE 
+			<<<CAMPOS_PK_NOMBRE_INPUT_WHERE_MAY>>>
+
+
+		IF @W_VERSION <> @I_VERSION 
+		BEGIN
+             EXEC ERROR_GEN @I_USUARIO, @I_TRANSACCION, 20007, '<<<NOMBRE-TABLA-MAY>>>_DEL'
+		     return 1
+		END
+
+		<<<LISTA-TABLAS-DETALLE>>>		
+		
+		DELETE <<<NOMBRE-TABLA-FULL>>>
+		WHERE 
+				<<<CAMPOS_PK_NOMBRE_INPUT_WHERE_MAY>>>
+		
+		if @@rowcount = 0
+		begin
+		     EXEC ERROR_GEN @I_USUARIO, @I_TRANSACCION, 20005, '<<<NOMBRE-TABLA-MAY>>>_DEL'
+		     return 1
+		end
+COMMIT TRAN
+
+	RETURN 0
+END
+GO
+

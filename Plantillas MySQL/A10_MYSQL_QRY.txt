@@ -1,0 +1,107 @@
+delete from template where te_id IN ('A10_MYSQL_QRY');
+INSERT INTO `generator`.`template`
+(`te_id`,`te_code`,`te_file`,`te_extension`)
+VALUES
+("A10_MYSQL_QRY",
+"drop procedure if exists <<<NOMBRE-ESQUEMA>>>.<<<NOMBRE-TABLA>>>_QRY;
+delimiter ##
+CREATE PROCEDURE <<<NOMBRE-ESQUEMA>>>.<<<NOMBRE-TABLA>>>_QRY
+/***********************************************************************************************
+	Archivo         :	<<<NOMBRE-TABLA>>>_QRY.sql								
+	Diseñado por	:	FRAMEWORKS CIA LTDA										
+	Módulo			:	<<<NOMBRE-APLICACION>>>												
+	Descripción	    :	Procedimiento para consulta de <<<NOMBRE-TABLA>>>		
+																				
+***********************************************************************************************
+	Este programa es parte del paquete de <<<NOMBRE-NAMESPACE>>> propiedad de Frameworks Cia Ltda.														
+	Su uso no autorizado queda expresamente prohibido asi como					
+	cualquier alteracion o agregado hecho por alguno de sus						
+	usuarios sin el debido consentimiento por escrito de Frameworks Cía. Ltda.	
+***********************************************************************************************
+	Fecha de Escritura:	<<<FECHA-CREACION>>>									
+	Autor		  :	<<<AUTOR>>>													
+***********************************************************************************************
+	MODIFICACIONES																
+	Fecha		Autor		     Razón											
+                                                                              
+***********************************************************************************************/
+(	
+	<<<INCLUYE_TRANSACTOR>>>
+	<<<CAMPOS-PK-INPUT-TIPO>>>,	
+	#PARÁMETROS PARA PAGINACIÓN
+	IN I_MODO			TINYINT,
+	IN I_FILAS			INT,	
+	IN I_FILTRO			TEXT,
+	IN I_ORDEN			VARCHAR(255),
+	IN I_IR_A_PAGINA	INT,
+	
+	OUT O_ROWS			INT,
+	OUT O_PAGES			INT,
+	OUT O_RETVAL		INT,
+	OUT O_RETMSG		VARCHAR(255)
+)
+proc_label: BEGIN
+	SET O_RETVAL = 0;
+	SET O_RETMSG = '';
+
+	# MODO 0: CONSULTA DE UN REGISTRO POR ID
+	IF (I_MODO = 0) THEN
+		SELECT <<<CAMPOS-NOMBRE-TODOS>>>
+		FROM <<<NOMBRE-TABLA-FULL>>>
+		WHERE <<<CAMPOS_PK_NOMBRE_INPUT_WHERE>>>;
+
+		IF ROW_COUNT() = 0 THEN
+			SET O_RETVAL = -4, O_RETMSG = 'SQL.10012: <<<NOMBRE-TABLA>>>_QRY: Registro no existe';
+			LEAVE proc_label;
+		END IF;
+	END IF;
+
+	# MODO 1: CONSULTA CON FILTROS Y ORDEN DINÁMICOS
+	IF (I_MODO = 1) THEN
+		SET @sql_stmt  = 'SELECT <<<CAMPOS-NOMBRE-TODOS>>>
+			FROM <<<NOMBRE-TABLA-FULL>>>
+			WHERE <<<CAMPOS_PK_NOMBRE_INPUT_WHERE_CONCAT>>>
+
+		SET @sql_stmt_count = CONCAT('SELECT COUNT(*) INTO @counts FROM (', @sql_stmt, ') AS T');
+		#AGREGA FILTRO
+		IF (I_FILTRO IS NOT NULL AND I_FILTRO <> '') THEN
+			# SI LA SENTENCIA NO INCLUYE CLAUSULA WHERE, USAR ESTA LINEA
+			# SET @sql_stmt = concat(@sql_stmt, ' WHERE ', I_FILTRO, ' ');
+			SET @sql_stmt = concat(@sql_stmt, ' AND ', I_FILTRO, ' ');
+			SET @sql_stmt_count = concat('SELECT COUNT(*) INTO @counts FROM (', @sql_stmt, ') AS T');
+		END IF;
+
+		# OBTIENE EL TOTAL DE REGISTROS PARA LA CONSULTA FINAL
+        PREPARE sql_stmt_count FROM @sql_stmt_count;
+		EXECUTE sql_stmt_count;
+        DEALLOCATE PREPARE sql_stmt_count;
+				
+		#AGREGA ORDEN
+		IF (I_ORDEN IS NOT NULL AND I_ORDEN <> '') THEN
+			SET @sql_stmt = CONCAT(@sql_stmt, ' ORDER BY ', @I_ORDEN, ' ');
+		ELSE
+			# ORDEN POR DEFAULT PARA LA PAGINACION
+			SET @sql_stmt = CONCAT(@sql_stmt, ' ORDER BY <<<CAMPOS-PK-NOMBRE>>>');
+		END IF;
+
+		# AGREGA SENTENCIAS DE PAGINACION
+		SET @sql_stmt = CONCAT(@sql_stmt, ' LIMIT ?, ?');
+
+		# EJECUTA LA SENTENCIA
+        set @row_from = (I_IR_A_PAGINA - 1) * I_FILAS;
+		set @page_size = I_FILAS;
+        PREPARE sql_stmt FROM @sql_stmt;
+		EXECUTE sql_stmt USING @row_from, @page_size;
+
+		IF (FOUND_ROWS() = 0) THEN
+			SET O_RETVAL = -4, O_RETMSG = 'SQL.10012: <<<NOMBRE-TABLA>>>_QRY: Registro no existe';
+			LEAVE proc_label;
+		END IF;
+        DEALLOCATE PREPARE sql_stmt;
+
+	END IF;
+	SET O_ROWS = @counts;
+	SET O_PAGES=CEILING(CAST(@counts as decimal)/I_FILAS);
+	SET O_RETVAL = 0;
+END##
+","<<<NOMBRE-TABLA>>>_QRY","sql");

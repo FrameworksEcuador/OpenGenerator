@@ -1,0 +1,62 @@
+/***********************************************************************************************************************
+	Archivo         :	<<<NOMBRE-TABLA-CAMEL>>>.svc.cs   									
+	Diseñado por	:	FRAMEWORKS CIA LTDA										
+	Módulo			:	<<<NOMBRE-NAMESPACE>>>												
+	Descripción	    :	Implementación del web service de <<<NOMBRE-TABLA-CAMEL>>> en <<<NOMBRE-NAMESPACE>>> 
+																				
+***********************************************************************************************************************
+	Este programa es parte del paquete de <<<NOMBRE-NAMESPACE>>> propiedad de Frameworks Cia Ltda.														
+	Su uso no autorizado queda expresamente prohibido asi como					
+	cualquier alteracion o agregado hecho por alguno de sus						
+	usuarios sin el debido consentimiento por escrito de Frameworks Cía. Ltda.	
+***********************************************************************************************************************
+	Fecha de Escritura:	<<<FECHA-CREACION>>>											
+	Autor		  :	<<<AUTOR>>>										
+***********************************************************************************************************************
+	MODIFICACIONES																
+	Fecha		Autor		     Razón										    
+                                                                              
+***********************************************************************************************************************/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.ServiceModel;
+using System.Text;
+using System.ServiceModel.Web;
+
+namespace <<<NOMBRE-NAMESPACE>>>.SVC
+{
+    public class <<<NOMBRE-TABLA-CAMEL>>> : I<<<NOMBRE-TABLA-CAMEL>>>
+    {
+		#region <<<NOMBRE-TABLA-CAMEL>>>
+		[WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, UriTemplate = "<<<NOMBRE-TABLA-CAMEL>>>Crear", BodyStyle = WebMessageBodyStyle.WrappedResponse)]
+        public DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>Crear(DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>, out DTO.clsResultado resultado)
+        {
+            BLL.bll<<<NOMBRE-TABLA-CAMEL>>> bll = new BLL.bll<<<NOMBRE-TABLA-CAMEL>>>();
+            return bll.<<<NOMBRE-TABLA-CAMEL>>>Crear(<<<NOMBRE-TABLA-CAMEL>>>, out resultado);
+        }
+
+		[WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, UriTemplate = "<<<NOMBRE-TABLA-CAMEL>>>Consultar", BodyStyle = WebMessageBodyStyle.WrappedResponse)]
+        public List<DTO.cls<<<NOMBRE-TABLA-CAMEL>>>> <<<NOMBRE-TABLA-CAMEL>>>Consultar(DTO.clsFiltro filtro, out DTO.clsResultado resultado)
+        {
+            BLL.bll<<<NOMBRE-TABLA-CAMEL>>> bll = new BLL.bll<<<NOMBRE-TABLA-CAMEL>>>();
+            return bll.<<<NOMBRE-TABLA-CAMEL>>>Consultar(filtro, out resultado);
+        }
+
+		[WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, UriTemplate = "<<<NOMBRE-TABLA-CAMEL>>>Actualizar", BodyStyle = WebMessageBodyStyle.WrappedResponse)]
+        public DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>Actualizar(DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>, out DTO.clsResultado resultado)
+        {
+            BLL.bll<<<NOMBRE-TABLA-CAMEL>>> bll = new BLL.bll<<<NOMBRE-TABLA-CAMEL>>>();
+            return bll.<<<NOMBRE-TABLA-CAMEL>>>Actualizar(<<<NOMBRE-TABLA-CAMEL>>>, out resultado);
+        }
+
+		[WebInvoke(Method = "POST", RequestFormat = WebMessageFormat.Json, ResponseFormat = WebMessageFormat.Json, UriTemplate = "<<<NOMBRE-TABLA-CAMEL>>>Eliminar", BodyStyle = WebMessageBodyStyle.WrappedResponse)]
+        public int <<<NOMBRE-TABLA-CAMEL>>>Eliminar(DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>, out DTO.clsResultado resultado)
+        {
+            BLL.bll<<<NOMBRE-TABLA-CAMEL>>> bll = new BLL.bll<<<NOMBRE-TABLA-CAMEL>>>();
+            return bll.<<<NOMBRE-TABLA-CAMEL>>>Eliminar(<<<NOMBRE-TABLA-CAMEL>>>, out resultado);
+        }
+		#endregion <<<NOMBRE-TABLA-CAMEL>>>
+    }
+}

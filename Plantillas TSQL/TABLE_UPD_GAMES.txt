@@ -1,0 +1,85 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+if exists (select * from sysobjects where name = '<<<NOMBRE-TABLA>>>_UPD')
+	drop proc <<<NOMBRE-TABLA>>>_UPD
+go
+
+CREATE PROCEDURE [dbo].[<<<NOMBRE-TABLA>>>_UPD]
+/*******************************************************************************************
+	Archivo         :	<<<NOMBRE-TABLA>>>_UPD.sql								
+	Diseñado por	:	FRAMEWORKS CIA LTDA										
+	Módulo			:	<<<NOMBRE-NAMESPACE>>>								
+	Descripción	    :	Procedimiento para actualización en <<<NOMBRE-TABLA>>>	
+																				
+*******************************************************************************************
+	Este programa es parte del paquete de <<<NOMBRE-NAMESPACE>>> propiedad			
+	de Frameworks Cia Ltda.														
+	Su uso no autorizado queda expresamente prohibido asi como					
+	cualquier alteracion o agregado hecho por alguno de sus						
+	usuarios sin el debido consentimiento por escrito de Frameworks Cía. Ltda.	
+*******************************************************************************************
+	Fecha de Escritura:	<<<FECHA-CREACION>>>									
+	Autor		  :	<<<AUTOR>>>													
+*******************************************************************************************
+	MODIFICACIONES																
+	Fecha		Autor		     Razón											
+                                                                              
+*******************************************************************************************/
+
+(		
+	<<<INCLUYE_TRANSACTOR>>>
+	<<<CAMPOS-INPUT-TIPO>>>,	
+	@I_VERSION		DATETIME = NULL,
+	@O_RETVAL		INT OUTPUT,
+	@O_RETMSG		VARCHAR(MAX) OUTPUT
+)
+AS
+	DECLARE 
+		@W_INSTANTE DATETIME,
+		@ERRORINFO VARCHAR(MAX)
+BEGIN
+
+	SET @O_RETVAL = 0
+	SET @O_RETMSG = ''
+
+	BEGIN TRY
+	
+		<<<INCLUYE-CONCURRENCIA>>>
+
+		UPDATE [dbo].[<<<NOMBRE-TABLA-FULL>>>]
+		SET 				
+			<<<CAMPOS_NOMBRE_INPUT>>>
+			<<<INCLUYE-UPD-CONCURRENCIA>>>
+		OUTPUT INSERTED.*
+		WHERE 
+			<<<CAMPOS_PK_NOMBRE_INPUT_WHERE>>>
+
+		IF @@rowcount = 0
+		begin
+			exec ERROR_GEN @i_num	 = 20004,
+						   @i_stored = '<<<NOMBRE-TABLA>>>_UPD',
+						   @O_CODIGO = @O_RETVAL out,
+						   @O_MSG = @O_RETMSG out
+			return 1
+		end
+	END TRY
+	BEGIN CATCH
+		if ERROR_NUMBER() = 547 -- Error de Integridad Referencial
+		begin
+			exec ERROR_GEN @i_num	 = 20004,
+						   @i_stored = '<<<NOMBRE-TABLA>>>_UPD',
+					       @O_CODIGO = @O_RETVAL out,
+					       @O_MSG = @O_RETMSG out
+			RETURN
+		end
+		SET @ERRORINFO = CONCAT(ERROR_LINE(),  ' - ' , ERROR_MESSAGE(),  ' - ' ,  ERROR_NUMBER(),  ' - ' ,  
+						ERROR_PROCEDURE(),  ' - ' ,  ERROR_SEVERITY(),  ' - ' , ERROR_STATE(), ' - ', @O_RETVAL, ' - ', @O_RETMSG)		
+		SET @O_RETMSG = ERROR_MESSAGE()
+		SET @O_RETVAL = ERROR_NUMBER()
+	END CATCH
+
+	RETURN 0
+END

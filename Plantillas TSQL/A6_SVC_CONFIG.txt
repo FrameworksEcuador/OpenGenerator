@@ -1,0 +1,3 @@
+<service name="<<<NOMBRE-NAMESPACE>>>.SVC.<<<NOMBRE-TABLA-CAMEL>>>">
+	<endpoint address="" behaviorConfiguration="webHttpBehavior" binding="webHttpBinding" bindingConfiguration="apiBinding" contract="<<<NOMBRE-NAMESPACE>>>.SVC.I<<<NOMBRE-TABLA-CAMEL>>>"/>
+</service>

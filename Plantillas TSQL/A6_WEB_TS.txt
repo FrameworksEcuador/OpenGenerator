@@ -1,0 +1,122 @@
+/***********************************************************************************************************************
+	Archivo         :	<<<NOMBRE-TABLA-MIN>>>.component.ts   									
+	Diseñado por	:	FRAMEWORKS CIA LTDA										
+	Módulo			:	<<<NOMBRE-NAMESPACE>>>												
+	Descripción	    :	Implementación del componente de <<<NOMBRE-TABLA-CAMEL>>> en <<<NOMBRE-NAMESPACE>>> 
+																				
+***********************************************************************************************************************
+	Este programa es parte del paquete de <<<NOMBRE-NAMESPACE>>> propiedad de Frameworks Cia Ltda.														
+	Su uso no autorizado queda expresamente prohibido asi como					
+	cualquier alteracion o agregado hecho por alguno de sus						
+	usuarios sin el debido consentimiento por escrito de Frameworks Cía. Ltda.	
+***********************************************************************************************************************
+	Fecha de Escritura:	<<<FECHA-CREACION>>>											
+	Autor		  :	<<<AUTOR>>>										
+***********************************************************************************************************************
+	MODIFICACIONES																
+	Fecha		Autor		     Razón										    
+                                                                              
+***********************************************************************************************************************/
+import { Component, ViewEncapsulation } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Router } from '@angular/router';
+import { GlobalesService } from '../../servicios/globales.service';
+import { FactoryService } from '../../servicios/factory.service';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationService } from 'primeng/api';
+
+import { cls<<<NOMBRE-TABLA-CAMEL>>> } from '../../cls/cls<<<NOMBRE-TABLA-CAMEL>>>';
+import { clsFiltro } from '../../cls/clsFiltro';
+
+@Component({
+    selector: '<<<NOMBRE-TABLA-MIN>>>',
+    templateUrl: './<<<NOMBRE-TABLA-MIN>>>.component.html',
+    styleUrls: ['../main.css']
+})
+export class <<<NOMBRE-TABLA-CAMEL>>>Component {
+    public <<<NOMBRE-TABLA-MIN>>>: cls<<<NOMBRE-TABLA-CAMEL>>> = new cls<<<NOMBRE-TABLA-CAMEL>>>;
+    public filtro: clsFiltro = new clsFiltro();
+
+    constructor(public globales: GlobalesService, private factory: FactoryService,
+        private translate: TranslateService, private router: Router, private confirmationService: ConfirmationService) {
+        this.fnLimpiar();
+    }
+
+    fnNuevo() {
+    }
+    fnSeleccionar(reg) {
+        this.<<<NOMBRE-TABLA-MIN>>> = reg;
+    }
+    fnGrabar() {
+        this.globales.fnMensajeLimpiar();
+        // Primero las validaciones
+        if (this.<<<NOMBRE-TABLA-MIN>>>.Codigo.length <= 0 || this.<<<NOMBRE-TABLA-MIN>>>.Codigo.length <= 0) {   // Validar que ingrese el Código
+            this.globales.fnMensaje("ERROR.30002: Por favor ingrese el código de <<<NOMBRE-TABLA-MIN>>>", false);
+            return;
+        }
+
+        if (!this.<<<NOMBRE-TABLA-MIN>>>.Version) {
+            this.factory.Ejecutar("<<<NOMBRE-TABLA-CAMEL>>>.svc/<<<NOMBRE-TABLA-CAMEL>>>Crear", this.<<<NOMBRE-TABLA-MIN>>>)
+                .then((resp: any) => {
+                    if (resp.resultado.Resultado == 0) {
+                        this.<<<NOMBRE-TABLA-MIN>>> = resp.<<<NOMBRE-TABLA-CAMEL>>>CrearResult;
+                        this.globales.fnMensaje("Registro grabado correctamente");
+                    } else {
+                        this.globales.fnMensaje(resp.resultado.Mensaje, false);
+                    }
+                }).catch(resp => {
+                    this.globales.fnMensaje("ERROR." + resp.status + ": " + resp.statusText, false);
+            });
+        } else {    // Ya existe el registro, solamente actualizar
+            this.factory.Ejecutar("<<<NOMBRE-TABLA-CAMEL>>>.svc/<<<NOMBRE-TABLA-CAMEL>>>Actualizar", this.<<<NOMBRE-TABLA-MIN>>>)
+                .then((resp: any) => {
+                    if (resp.resultado.Resultado == 0) {
+                        this.<<<NOMBRE-TABLA-MIN>>> = resp.<<<NOMBRE-TABLA-CAMEL>>>ActualizarResult;
+                        this.globales.fnMensaje("Registro actualizado correctamente");
+                    } else {
+                        this.globales.fnMensaje(resp.resultado.Mensaje, false);
+                    }
+                }).catch(resp => {
+                    this.globales.fnMensaje("ERROR." + resp.status + ": " + resp.statusText, false);
+                });
+        }
+    }
+    fnEliminar() {
+        this.confirmationService.confirm({
+            message: 'Está seguro que desea eliminar este registro?',
+            accept: () => {
+                this.factory.Ejecutar("<<<NOMBRE-TABLA-CAMEL>>>.svc/<<<NOMBRE-TABLA-CAMEL>>>Eliminar", this.<<<NOMBRE-TABLA-MIN>>>)
+                    .then((resp: any) => {
+                        if (resp.resultado.Resultado == 0) {
+                            this.fnLimpiar();
+                            this.globales.fnMensaje("Registro eliminado");
+                        } else {
+                            this.globales.fnMensaje(resp.resultado.Mensaje, false);
+                        }
+                    }).catch(resp => {
+                        this.globales.fnMensaje("ERROR." + resp.status + ": " + resp.statusText, false);
+                    });
+            }
+        });
+    }
+    fnLimpiar() {
+        //this.confirmationService.confirm({ message: 'Hola mundo', rejectVisible: false, acceptLabel: 'Ok' });
+        this.globales.fnMensajeLimpiar();
+<<<CAMPOS-LIMPIAR>>>
+    }
+
+    fnDeshabilitarGrabar() {
+        if (this.<<<NOMBRE-TABLA-MIN>>> == null) return true;
+        //if (this.<<<NOMBRE-TABLA-MIN>>>.Codigo == null || this.<<<NOMBRE-TABLA-MIN>>>.Codigo.length <= 0) return true;
+        //if (this.<<<NOMBRE-TABLA-MIN>>>.Nombre == null || this.<<<NOMBRE-TABLA-MIN>>>.Nombre.length <= 0) return true;
+        return false;
+    }
+    fnDeshabilitarEliminar() {
+        if (this.<<<NOMBRE-TABLA-MIN>>> == null) return true;
+        //if (this.<<<NOMBRE-TABLA-MIN>>>.Codigo == null || this.<<<NOMBRE-TABLA-MIN>>>.Codigo.length <= 0) return true;
+        //if (this.<<<NOMBRE-TABLA-MIN>>>.Nombre == null || this.<<<NOMBRE-TABLA-MIN>>>.Nombre.length <= 0) return true;
+        if (this.<<<NOMBRE-TABLA-MIN>>>.Version == null) return true;
+        return false;
+    }
+
+}

@@ -1,0 +1,71 @@
+delete from template where te_id IN ('A10_MYSQL_DEL');
+INSERT INTO `generator`.`template`
+(`te_id`,`te_code`,`te_file`,`te_extension`)
+VALUES
+("A10_MYSQL_DEL",
+"drop procedure if exists <<<NOMBRE-ESQUEMA>>>.<<<NOMBRE-TABLA>>>_DEL;
+ delimiter ##
+ 
+ CREATE Procedure <<<NOMBRE-ESQUEMA>>>.<<<NOMBRE-TABLA>>>_DEL
+ /****************************************************************************** 
+  Stored Procedure: <<<NOMBRE-TABLA>>>_DEL										 
+  Archivo         : <<<NOMBRE-TABLA>>>_DEL.sql									 
+  Diseñado por    : FRAMEWORKS CIA LTDA										 
+  Módulo          : <<<NOMBRE-APLICACION>>>												 
+  Descripción     : Procedimiento para eliminar datos de <<<NOMBRE-TABLA>>>		
+ 				 																 
+ ****************************************************************************** 
+ 	Este programa es parte del paquete de <<<NOMBRE-APLICACION>>>, propiedad de Frameworks Cia Ltda
+ 	Su uso no autorizado queda expresamente prohibido asi como					
+ 	cualquier alteracion o agregado hecho por alguno de sus						
+ 	usuarios sin el debido consentimiento por escrito de FRAMEWORKS CIA LTDA
+ 	
+ ****************************************************************************** 
+  Fecha de escritura: <<<FECHA-CREACION>>>										 
+  Autor             : <<<AUTOR>>>												 
+ ****************************************************************************** 
+  MODIFICACIONES																 
+  Fecha	Autor	Razón														 
+ 																				 
+ ******************************************************************************/
+ (
+ 	<<<INCLUYE_TRANSACTOR>>>
+ 	<<<CAMPOS-PK-INPUT-TIPO>>>,	
+ 	
+     # control de concurrencia
+ 	I_VERSION		DATETIME,
+ 	
+ 	OUT O_RETVAL		INT,
+ 	OUT O_RETMSG		VARCHAR(255)
+ )
+ proc_label: BEGIN
+ 	DECLARE W_INSTANTE DATETIME;
+     DECLARE exit handler FOR SQLEXCEPTION
+     BEGIN
+ 		GET DIAGNOSTICS CONDITION 1 O_RETVAL = MYSQL_ERRNO, O_RETMSG = MESSAGE_TEXT;
+     END;
+ 
+ 	SET O_RETVAL = 0;
+ 	SET O_RETMSG = '';
+ 
+ 	SELECT W_INSTANTE = <<<COLUMNA_CONTROL_VERSION>>>
+ 	FROM <<<NOMBRE-TABLA-FULL>>> 
+ 	WHERE <<<CAMPOS_PK_NOMBRE_INPUT_WHERE>>>;
+ 		
+ 	IF (CAST(W_INSTANTE AS DATETIME) <> CAST(I_VERSION AS DATETIME)) THEN
+ 		SET O_RETVAL = -3, O_RETMSG = 'MYSQL.10010: <<<NOMBRE-TABLA>>>_DEL: Versión incorrecta';
+ 		LEAVE proc_label;
+ 	END IF;
+ 
+ 	START TRANSACTION;
+ 
+ 	DELETE FROM <<<NOMBRE-TABLA-FULL>>>
+ 	WHERE <<<CAMPOS_PK_NOMBRE_INPUT_WHERE>>>;
+ 
+ 	IF (ROW_COUNT() = 0) THEN
+ 		SELECT O_RETVAL = -4, O_RETMSG = 'MYSQL.10012: <<<NOMBRE-TABLA>>>_DEL: Registro no existe';
+ 	END IF;
+ 	COMMIT;
+ END##
+ DELIMITER ;
+","<<<NOMBRE-TABLA>>>_DEL","sql");

@@ -1,0 +1,88 @@
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+if exists (select * from sysobjects where name = '<<<NOMBRE-TABLA>>>_DEL')
+	drop proc <<<NOMBRE-TABLA>>>_DEL
+go
+
+CREATE Procedure [dbo].[<<<NOMBRE-TABLA>>>_DEL]
+/****************************************************************************** 
+ Stored procedure: <<<NOMBRE-TABLA>>>_DEL										 
+ Archivo         : <<<NOMBRE-TABLA>>>_DEL.sql									 
+ Diseñado por    : FRAMEWORKS CIA LTDA										 
+ Módulo 		   : <<<NOMBRE-NAMESPACE>>>												 
+ Descripción     : Procedimiento para eliminar datos de <<<NOMBRE-TABLA>>>	
+				 																 
+****************************************************************************** 
+																				 
+****************************************************************************** 
+ Fecha de Escritura: <<<FECHA-CREACION>>>										 
+ Autor           : <<<AUTOR>>>												 
+****************************************************************************** 
+ Modificaciones																 
+ Fecha	Autor	Razón														 
+																				 
+******************************************************************************/
+
+(	----PARÁMETROS OBLIGATORIOS
+	<<<INCLUYE_TRANSACTOR>>>
+	<<<CAMPOS-PK-INPUT-TIPO>>>,	
+	
+	-- control de concurrencia
+	@I_INSTANTE		DATETIME = NULL,
+	
+	-- OUTPUT
+	@O_RETVAL		BIGINT OUTPUT,
+	@O_RETMSG		VARCHAR(MAX) OUTPUT
+)
+AS
+	DECLARE 
+		@W_INSTANTE DATETIME,
+		@ERRORINFO VARCHAR(MAX)
+BEGIN
+
+	SET @O_RETVAL = 0
+	SET @O_RETMSG = ''	
+
+	BEGIN TRY
+	
+		<<<INCLUYE-CONCURRENCIA>>>
+
+		<<<LISTA-TABLAS-DETALLE>>>		
+		
+		DELETE [dbo].<<<NOMBRE-TABLA-FULL>>>
+		WHERE 
+				<<<CAMPOS_PK_NOMBRE_INPUT_WHERE>>>
+		
+		if @@rowcount = 0
+		begin
+			exec fw_security..error_qry
+				@i_num	 = 111002,
+				@i_stored = '<<<NOMBRE-TABLA>>>_DEL'
+			return 1
+		end
+
+	END TRY
+	BEGIN CATCH
+		if ERROR_NUMBER() = 547 -- Error de Integridad Referencial
+		begin
+			exec fw_security..error_qry
+					@i_num	 = 111064,
+					@i_stored = '<<<NOMBRE-TABLA>>>_DUP'
+		end
+		
+		-- MENSAJE INFORMATIVO PARA MENSAJE DE RETORNO Y REGISTRO EN EL LOG
+		SET @ERRORINFO = CONCAT(ERROR_LINE(),  ' - ' , ERROR_MESSAGE(),  ' - ' ,  ERROR_NUMBER(),  ' - ' , 
+							ERROR_PROCEDURE(),  ' - ' ,  ERROR_SEVERITY(),  ' - ' , ERROR_STATE(), ' - ', @O_RETVAL, ' - ', @O_RETMSG)
+
+			<<<LOG-INTERNO-CON-TRANSACTOR>>>
+		
+		SET @O_RETMSG = ERROR_MESSAGE()
+		SET @O_RETVAL = ERROR_NUMBER()
+	END CATCH
+
+	RETURN 0
+END

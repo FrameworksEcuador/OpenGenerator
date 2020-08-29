@@ -1,0 +1,54 @@
+<p-dialog [(visible)]="display" [width]="700" [minHeight]="600" [modal]="true" [resizable]="false" appendTo="body">
+    <p-header>
+        Lista de <<<NOMBRE-TABLA-CAMEL>>>s
+    </p-header>
+    <div class="mensajesAlerta col-xs-12" [ngClass]="{'alertaok': globales.AlertaOk, 'alertaerr': !globales.AlertaOk}" *ngIf="globales.Mensaje.length > 0">
+        {{globales.Mensaje}}
+        <div *ngIf="globales.AlertaOk" style="float:left; margin-right:10px;"><span class="fa fa-check" aria-hidden="true"></span></div>
+        <div *ngIf="!globales.AlertaOk" style="float:left; margin-right:10px;"><span class="fa fa-remove" aria-hidden="true"></span></div>
+    </div>
+    <div class="table-responsive" style="height: 500px; overflow-y: auto">
+        <table class="table-condensed" *ngIf="filtro.Condiciones" style="margin-bottom: 0px">
+            <tr>
+	<<<CAMPOS-WEB-FILTRO>>>
+                <td width="10%" style="text-align:center">
+                    <p-button icon="fa fa-eye" (onClick)="fnAbrir()" title="Ver"></p-button>
+                </td>
+            </tr>
+        </table>
+        <table class="table table-bordered table-condensed table-striped">
+            <thead>
+                <tr class="bg-active-gray">
+	<<<CAMPOS-WEB-TITULO>>>
+					<th width="10%" style="text-align:center">
+						<p-button icon="fa fa-search" (onClick)="fnCondiciones()" title="Condiciones de búsqueda"></p-button>
+					</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let reg of registros">
+	<<<CAMPOS-WEB-DETALLE>>>
+                    <td style="text-align:center">
+                        <p-button icon="fa fa-hand-pointer-o" (onClick)="fnSeleccionar(reg)" title="Seleccionar"></p-button>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" style="text-align: center">
+                        <table width="100%">
+                            <tr>
+                                <td>
+                                    <p-paginator [(first)]="filtro.FilaInicial" [rows]="filtro.Filas" [totalRecords]="filtro.TotalRegistros" pageLinkSize="3" [rowsPerPageOptions]="[5,10,50,100]" (onPageChange)="fnPaginar($event)"></p-paginator>
+                                </td>
+                                <td>
+                                    Página: {{filtro.Pagina}}/{{filtro.TotalPaginas}} Registros: {{filtro.TotalRegistros}}
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</p-dialog>

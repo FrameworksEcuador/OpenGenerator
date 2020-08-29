@@ -1,0 +1,102 @@
+
+/***********************************************************************************************
+	Archivo         :	<<<NOMBRE-TABLA-MAY>>>_QRY.sql								
+	Diseñado por	:	FRAMEWORKS CIA LTDA										
+	Módulo			:	<<<NOMBRE-NAMESPACE>>>												
+	Descripción	    :	Procedimiento para consulta de <<<NOMBRE-TABLA>>>		
+																				
+***********************************************************************************************
+	Este programa es parte del paquete de <<<NOMBRE-NAMESPACE>>> propiedad			
+	de Frameworks Cia Ltda.														
+	Su uso no autorizado queda expresamente prohibido asi como					
+	cualquier alteracion o agregado hecho por alguno de sus						
+	usuarios sin el debido consentimiento por escrito de Frameworks Cía. Ltda.	
+***********************************************************************************************
+	Fecha de Escritura:	<<<FECHA-CREACION>>>									
+	Autor		  :	<<<AUTOR>>>													
+***********************************************************************************************
+	MODIFICACIONES																
+	Fecha		Autor		     Razón											
+                                                                              
+***********************************************************************************************/
+
+if exists (select * from sysobjects where name = '<<<NOMBRE-TABLA-MAY>>>_QRY')
+	drop proc <<<NOMBRE-TABLA-MAY>>>_QRY
+go
+
+CREATE PROCEDURE [<<<NOMBRE-TABLA-MAY>>>_QRY]
+(	@I_USUARIO	varchar(64),
+	@I_TRANSACCION int,
+	<<<CAMPOS-PK-INPUT-TIPO-MAY>>>,	
+
+	----PARÁMETROS PARA PAGINACIÓN
+	@I_MODO			TINYINT = NULL,
+	@I_FILAS		INT = 100,	
+	@I_FILTRO		VARCHAR(2048) = NULL,
+	@I_ORDEN		VARCHAR(2048) = NULL,
+	@I_PAGINA	    INT = 1,
+	
+	
+    @O_REGISTROS INT OUTPUT
+)
+AS
+BEGIN
+DECLARE
+	-- VARIABLES DE PAGINACIÓN
+    @W_CAMPOS	VARCHAR(512),
+	@W_TABLAS	VARCHAR(512),
+	@W_CONDI	VARCHAR(512),
+	@W_ORDEN	VARCHAR(512),
+	@W_SQL		VARCHAR(4000),
+	@W_SQL_CONT VARCHAR(4000)
+
+  SET @O_REGISTROS = 0
+
+
+		-- MODO 0: CONSULTA DE UN REGISTRO POR ID
+		IF @I_MODO = 0
+		BEGIN
+			SELECT 
+				<<<CAMPOS-NOMBRE>>>
+				<<<INCLUYE-ADD-CONCURRENCIA-CAMPO>>>
+			FROM 
+				<<<NOMBRE-TABLA-FULL>>>
+			WHERE
+				<<<CAMPOS_PK_NOMBRE_INPUT_WHERE_MAY>>>
+
+			IF @@ROWCOUNT = 0
+			BEGIN
+				EXEC ERROR_GEN @I_USUARIO, @I_TRANSACCION, 20006, '<<<NOMBRE-TABLA-MAY>>>_QRY'
+				return 1
+			END
+		END
+
+	-- MODO 1: CONSULTA DE UNA LISTA DE REGISTROS PAGINADA, CON FILTRO Y ORDEN. DINAMICA
+	IF @I_MODO = 1
+	BEGIN
+		SET @W_CAMPOS = '<<<CAMPOS-NOMBRE>>> <<<INCLUYE-ADD-CONCURRENCIA-CAMPO>>>'
+		SET @W_TABLAS = ' FROM <<<NOMBRE-TABLA-FULL>>> '
+		SET @W_CONDI  = '' 
+		IF @I_FILTRO is not NULL SET @W_CONDI = @W_CONDI + ' WHERE ' + @I_FILTRO
+		SET @W_ORDEN = ' ORDER BY <<<CAMPOS-PK-NOMBRE>>>'
+		IF @I_ORDEN is not NULL SET @W_ORDEN = ' ORDER BY ' + @I_ORDEN
+		SET @W_SQL =' SELECT ID_REGISTRO=IDENTITY(10), ' + @W_CAMPOS + 
+					' INTO #TABLA ' + @W_TABLAS + @W_CONDI + @W_ORDEN +
+					' SELECT * FROM #TABLA ' +
+					' WHERE ID_REGISTRO <= @I_PAGINA * @I_FILAS ' +
+					' AND ID_REGISTRO > (@I_PAGINA - 1) * @I_FILAS '
+		EXECUTE ( @W_SQL )
+		IF @@ROWCOUNT = 0
+		BEGIN
+			EXEC ERROR_GEN @I_USUARIO, @I_TRANSACCION, 20006, '<<<NOMBRE-TABLA-MAY>>>_QRY'
+			RETURN 1
+		END
+		ELSE
+		BEGIN
+			SET @W_SQL_CONT = ' SELECT @O_REGISTROS = COUNT(*) ' +
+								@W_TABLAS + @W_CONDI
+			EXEC ( @W_SQL_CONT )
+		END
+	END
+	RETURN 0
+END

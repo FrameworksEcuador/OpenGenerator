@@ -1,0 +1,1 @@
+node C:\Users\patricio\AppData\Roaming\npm\node_modules\@angular\cli\bin\ng build --deploy-url /OpenGeneratorWeb/ --base-href /OpenGeneratorWeb/ --prod

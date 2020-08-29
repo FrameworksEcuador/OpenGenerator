@@ -3,3 +3,9 @@
 ################################################################################
 
 /OpenGeneratorSVC/bin
+/OpenGeneratorSVC/obj
+/OpenGeneratorSVCPublicado
+/OpenGeneratorWeb/dist
+/OpenGeneratorWeb/node_modules
+/fwGenerator v2.zip
+/.vs

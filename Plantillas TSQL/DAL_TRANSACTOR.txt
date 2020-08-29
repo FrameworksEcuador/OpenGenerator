@@ -1,0 +1,213 @@
+/*******************************************************************************************************
+	Archivo         :	dal<<<NOMBRE-TABLA-CAMEL>>>.cs        		                
+	Diseñado por	:	FRAMEWORKS CIA LTDA										
+	Módulo			:	<<<NOMBRE-NAMESPACE>>>												
+	Descripción	    :	DAL de <<<NOMBRE-TABLA-CAMEL>>> con TRANSACTOR
+																				
+*******************************************************************************************************
+	Este programa es parte del paquete de <<<NOMBRE-NAMESPACE>>> propiedad			
+	de Frameworks Cia Ltda.														
+	Su uso no autorizado queda expresamente prohibido asi como					
+	cualquier alteracion o agregado hecho por alguno de sus						
+	usuarios sin el debido consentimiento por escrito de Frameworks Cía. Ltda.	
+*******************************************************************************************************
+	Fecha de Escritura:	<<<FECHA-CREACION>>>									
+	Autor		  :	<<<AUTOR>>>													
+*******************************************************************************************************
+	MODIFICACIONES																
+	Fecha		Autor		     Razón										    
+                                                                              
+*******************************************************************************************************/
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+using System.Configuration;
+using System.Diagnostics;
+using Frameworks.Transactor;
+
+namespace <<<NOMBRE-NAMESPACE>>>.DAL
+{
+    public class dal<<<NOMBRE-TABLA-CAMEL>>>
+    {
+    
+    	/**************************************************************************
+			<<<NOMBRE-TABLA-CAMEL>>>_Crear()		                                                                          
+	**************************************************************************/
+        public DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>Crear(DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>, out DTO.clsResultado resultado)
+        {
+		string TransactorDireccion = ConfigurationManager.AppSettings["TransactorDireccion"];
+		string TransactorPuerto = ConfigurationManager.AppSettings["TransactorPuerto"];
+		resultado = new DTO.clsResultado();
+		int tranResult = 0;
+		DTO.cls<<<NOMBRE-TABLA-CAMEL>>> dto<<<NOMBRE-TABLA-CAMEL>>> = new DTO.cls<<<NOMBRE-TABLA-CAMEL>>>();
+
+            try
+            {
+                clsTrnClient trn = new clsTrnClient(TransactorDireccion, TransactorPuerto);
+                trn.Identifier = <<<NOMBRE-TABLA-CAMEL>>>.Identificador;
+                trn.fnInitProcess(1, "<<<NOMBRE-ESQUEMA>>>", "dbo", "<<<NOMBRE-TABLA>>>_ADD");
+                
+<<<CAMPOS-DAL-TRANSACTOR-INPUT>>>
+                
+                tranResult = trn.fnExecute();
+               
+                if (tranResult == 0)
+	                       {
+	                           using (System.Data.DataTable dt = trn.fnGetDataTable(0))
+	                           {
+	                               foreach (System.Data.DataRow dr in dt.Rows)
+	                               {
+<<<CAMPOS-DAL-TRANSACTOR-OUTPUT>>>
+	                               }
+	                               dt.Dispose();
+	                           }
+                }
+               
+                resultado.Resultado = trn.fnGetInt("@O_RETVAL");
+		resultado.Mensaje = trn.fnGetString("@O_RETMSG");
+                clsTrnResultados.ObtenerErrores(trn, "dal<<<NOMBRE-TABLA-CAMEL>>>.<<<NOMBRE-TABLA-CAMEL>>>Crear", ref resultado, ref tranResult);
+                trn.fnDisconnect();
+            }
+            catch (Exception error)
+            {
+                clsTrnResultados.RegistrarExcepcion(error, "dal<<<NOMBRE-TABLA-CAMEL>>>.<<<NOMBRE-TABLA-CAMEL>>>Consultar", ref resultado, ref tranResult);
+            }
+            return dto<<<NOMBRE-TABLA-CAMEL>>>;
+        }
+
+    	/**************************************************************************
+			<<<NOMBRE-TABLA-CAMEL>>>_Eliminar()	                                                               			
+	**************************************************************************/
+        public int <<<NOMBRE-TABLA-CAMEL>>>Eliminar(DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>, out DTO.clsResultado resultado)
+        {
+            string TransactorDireccion = ConfigurationManager.AppSettings["TransactorDireccion"];
+            string TransactorPuerto = ConfigurationManager.AppSettings["TransactorPuerto"];
+            resultado = new DTO.clsResultado();
+			int tranResult = 0;
+
+            try
+            {
+                clsTrnClient trn = new clsTrnClient(TransactorDireccion, TransactorPuerto);
+                trn.Identifier = <<<NOMBRE-TABLA-CAMEL>>>.Identificador;
+                trn.fnInitProcess(1, "<<<NOMBRE-ESQUEMA>>>", "dbo", "<<<NOMBRE-TABLA>>>_DEL");
+                
+<<<CAMPOS-PK-DAL-TRANSACTOR-INPUT>>>
+                
+                tranResult = trn.fnExecute();
+                resultado.Resultado = trn.fnGetInt("@O_RETVAL");
+		resultado.Mensaje = trn.fnGetString("@O_RETMSG");
+                clsTrnResultados.ObtenerErrores(trn, "dal<<<NOMBRE-TABLA-CAMEL>>>.<<<NOMBRE-TABLA-CAMEL>>>Eliminar", ref resultado, ref tranResult);
+                trn.fnDisconnect();
+		}
+		catch (Exception error)
+		{
+		    clsTrnResultados.RegistrarExcepcion(error, "dal<<<NOMBRE-TABLA-CAMEL>>>.<<<NOMBRE-TABLA-CAMEL>>>Eliminar", ref resultado, ref tranResult);
+		}
+		return tranResult;
+        }
+
+    	/**************************************************************************
+			<<<NOMBRE-TABLA-CAMEL>>>_Actualizar()		                                                     						
+	**************************************************************************/
+        public DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>Actualizar(DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>, out DTO.clsResultado resultado)
+        {
+            string TransactorDireccion = ConfigurationManager.AppSettings["TransactorDireccion"];
+            string TransactorPuerto = ConfigurationManager.AppSettings["TransactorPuerto"];
+            int tranResult = 0;
+            resultado = new DTO.clsResultado();
+            DTO.cls<<<NOMBRE-TABLA-CAMEL>>> dto<<<NOMBRE-TABLA-CAMEL>>> = new DTO.cls<<<NOMBRE-TABLA-CAMEL>>>();
+
+            try
+            {
+                clsTrnClient trn = new clsTrnClient(TransactorDireccion, TransactorPuerto);
+                trn.Identifier = <<<NOMBRE-TABLA-CAMEL>>>.Identificador;
+                trn.fnInitProcess(1, "<<<NOMBRE-ESQUEMA>>>", "dbo", "<<<NOMBRE-TABLA>>>_UPD");
+                
+<<<CAMPOS-DAL-TRANSACTOR-INPUT>>>
+                
+                tranResult = trn.fnExecute();
+		if (tranResult == 0)
+	                       {
+	                           using (System.Data.DataTable dt = trn.fnGetDataTable(0))
+	                           {
+	                               foreach (System.Data.DataRow dr in dt.Rows)
+	                               {
+<<<CAMPOS-DAL-TRANSACTOR-OUTPUT>>>
+	                               }
+	                               dt.Dispose();
+	                           }
+                }
+                
+                resultado.Resultado = trn.fnGetInt("@O_RETVAL");
+		resultado.Mensaje = trn.fnGetString("@O_RETMSG");
+                clsTrnResultados.ObtenerErrores(trn, "dal<<<NOMBRE-TABLA-CAMEL>>>.<<<NOMBRE-TABLA-CAMEL>>>Actualizar", ref resultado, ref tranResult);
+                trn.fnDisconnect();
+		}
+		catch (Exception error)
+		{
+		    clsTrnResultados.RegistrarExcepcion(error, "dal<<<NOMBRE-TABLA-CAMEL>>>.<<<NOMBRE-TABLA-CAMEL>>>Actualizar", ref resultado, ref tranResult);
+		}
+            return dto<<<NOMBRE-TABLA-CAMEL>>>;
+        }
+
+    	/**************************************************************************
+			<<<NOMBRE-TABLA-CAMEL>>>_Consultar()		                                                     						
+	**************************************************************************/
+        public List<DTO.cls<<<NOMBRE-TABLA-CAMEL>>>> <<<NOMBRE-TABLA-CAMEL>>>Consultar(DTO.clsFiltro filtro, out DTO.clsResultado resultado)
+        {
+            string TransactorDireccion = ConfigurationManager.AppSettings["TransactorDireccion"];
+            string TransactorPuerto = ConfigurationManager.AppSettings["TransactorPuerto"];
+            List<DTO.cls<<<NOMBRE-TABLA-CAMEL>>>> datos = null;
+            resultado = new DTO.clsResultado();
+			int tranResult = 0;
+
+            try
+            {
+                clsTrnClient trn = new clsTrnClient(TransactorDireccion, TransactorPuerto);
+                trn.Identifier = filtro.Identificador;
+                trn.fnInitProcess(1, "<<<NOMBRE-ESQUEMA>>>", "dbo", "<<<NOMBRE-TABLA>>>_QRY");
+                
+<<<CAMPOS-PK-DAL-TRANSACTOR-INPUT-QRY>>>
+                trn.fnSetTinyint("@i_modo", clsTrnClient.eDirection.Input, false, (byte)filtro.Modo);
+		trn.fnSetInt("@i_filas", clsTrnClient.eDirection.Input, false, (int)filtro.Filas);
+		trn.fnSetString("@i_filtro", clsTrnClient.eDirection.Input, false, filtro.Filtro.Length, filtro.Filtro);
+		trn.fnSetString("@i_orden", clsTrnClient.eDirection.Input, false, filtro.Orden.Length, filtro.Orden);
+		trn.fnSetInt("@i_ir_a_pagina", clsTrnClient.eDirection.Input, false, (int)filtro.Pagina);
+		
+                trn.fnSetInt("@O_PAGES", clsTrnClient.eDirection.Output, false, 0);
+                
+                tranResult = trn.fnExecute();
+                if (tranResult == 0)
+                {
+                    datos = new List<DTO.cls<<<NOMBRE-TABLA-CAMEL>>>>();
+                    using (System.Data.DataTable dt = trn.fnGetDataTable(0))
+                    {
+                        foreach (System.Data.DataRow dr in dt.Rows)
+                        {
+                            DTO.cls<<<NOMBRE-TABLA-CAMEL>>> dto<<<NOMBRE-TABLA-CAMEL>>> = new DTO.cls<<<NOMBRE-TABLA-CAMEL>>>();
+                            
+<<<CAMPOS-DAL-TRANSACTOR-OUTPUT>>>
+                            
+                            datos.Add(dto<<<NOMBRE-TABLA-CAMEL>>>);
+                        }
+                        dt.Dispose();
+                    }
+                    resultado.Paginas = trn.fnGetInt("@O_PAGES");
+                }
+                resultado.Resultado = trn.fnGetInt("@O_RETVAL");
+				resultado.Mensaje = trn.fnGetString("@O_RETMSG");
+                clsTrnResultados.ObtenerErrores(trn, "dal<<<NOMBRE-TABLA-CAMEL>>>.<<<NOMBRE-TABLA-CAMEL>>>Consultar", ref resultado, ref tranResult);
+                trn.fnDisconnect();
+		}
+		catch (Exception error)
+		{
+		    clsTrnResultados.RegistrarExcepcion(error, "dal<<<NOMBRE-TABLA-CAMEL>>>.<<<NOMBRE-TABLA-CAMEL>>>Consultar", ref resultado, ref tranResult);
+		    datos = null;
+		}
+		return datos;
+        }        
+    }
+}

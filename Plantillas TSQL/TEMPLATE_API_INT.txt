@@ -1,0 +1,46 @@
+/***************************************************************************************************************
+	Archivo         :	Iapi<<<NOMBRE-TABLA-CAMEL>>>.svc.cs							
+	Diseñado por	:	FRAMEWORKS CIA LTDA										
+	Módulo			:	<<<NOMBRE-NAMESPACE>>>									
+	Descripción	    :	Interface del API de <<<NOMBRE-TABLA-CAMEL>>> en el Aplicativo Web	
+																				
+***************************************************************************************************************
+	Este programa es parte del paquete de <<<NOMBRE-NAMESPACE>>> propiedad			
+	de Frameworks Cia Ltda.														
+	Su uso no autorizado queda expresamente prohibido asi como					
+	cualquier alteracion o agregado hecho por alguno de sus						
+	usuarios sin el debido consentimiento por escrito de Frameworks Cía. Ltda.	
+***************************************************************************************************************
+	Fecha de Escritura:	<<<FECHA-CREACION>>>									
+	Autor		  :	<<<AUTOR>>>													
+***************************************************************************************************************
+	MODIFICACIONES																
+	Fecha		Autor		     Razón										    
+                                                                              
+***************************************************************************************************************/
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.ServiceModel;
+using System.Text;
+
+namespace <<<NOMBRE-NAMESPACE>>>.api
+{
+    [ServiceContract]
+    public interface Iapi<<<NOMBRE-TABLA-CAMEL>>>
+    {
+        [OperationContract]
+        <<<NOMBRE-TABLA-CAMEL>>>Svc.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>Crear(<<<NOMBRE-TABLA-CAMEL>>>Svc.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>, out <<<NOMBRE-TABLA-CAMEL>>>Svc.clsResultado resultado);
+
+        [OperationContract]
+        <<<NOMBRE-TABLA-CAMEL>>>Svc.cls<<<NOMBRE-TABLA-CAMEL>>>[] <<<NOMBRE-TABLA-CAMEL>>>Consultar(<<<NOMBRE-TABLA-CAMEL>>>Svc.clsFiltro filtro, out <<<NOMBRE-TABLA-CAMEL>>>Svc.clsResultado resultado);
+
+        [OperationContract]
+        <<<NOMBRE-TABLA-CAMEL>>>Svc.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>Actualizar(<<<NOMBRE-TABLA-CAMEL>>>Svc.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>, out <<<NOMBRE-TABLA-CAMEL>>>Svc.clsResultado resultado);
+
+        [OperationContract]
+        int <<<NOMBRE-TABLA-CAMEL>>>Eliminar(<<<NOMBRE-TABLA-CAMEL>>>Svc.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>, out <<<NOMBRE-TABLA-CAMEL>>>Svc.clsResultado resultado);
+    }
+}

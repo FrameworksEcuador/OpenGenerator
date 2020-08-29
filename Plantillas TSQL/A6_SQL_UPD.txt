@@ -1,0 +1,83 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+if exists (select * from sysobjects where name = '<<<NOMBRE-TABLA>>>_UPD')
+	drop proc <<<NOMBRE-TABLA>>>_UPD
+go
+
+CREATE PROCEDURE [dbo].[<<<NOMBRE-TABLA>>>_UPD]
+/*******************************************************************************************
+	Archivo         :	<<<NOMBRE-TABLA>>>_UPD.sql								
+	Diseñado por	:	FRAMEWORKS CIA LTDA										
+	Módulo			:	<<<NOMBRE-NAMESPACE>>>								
+	Descripción	    :	Procedimiento para actualización en <<<NOMBRE-TABLA>>>	
+																				
+*******************************************************************************************
+	Este programa es parte del paquete de <<<NOMBRE-NAMESPACE>>> propiedad de Frameworks Cia Ltda.														
+	Su uso no autorizado queda expresamente prohibido asi como					
+	cualquier alteracion o agregado hecho por alguno de sus						
+	usuarios sin el debido consentimiento por escrito de Frameworks Cía. Ltda.	
+*******************************************************************************************
+	Fecha de Escritura:	<<<FECHA-CREACION>>>									
+	Autor		  :	<<<AUTOR>>>													
+*******************************************************************************************
+	MODIFICACIONES																
+	Fecha		Autor		     Razón											
+                                                                              
+*******************************************************************************************/
+
+(		
+	<<<INCLUYE_TRANSACTOR>>>
+	<<<CAMPOS-INPUT-TIPO>>>,	
+	
+	-- control de concurrencia
+	@I_VERSION		DATETIME = NULL,
+	
+	@O_RETVAL		INT OUTPUT,
+	@O_RETMSG		VARCHAR(MAX) OUTPUT
+)
+AS
+	DECLARE @W_INSTANTE DATETIME
+BEGIN
+	SET @O_RETVAL = 0
+	SET @O_RETMSG = ''
+
+	BEGIN TRY
+	
+		SELECT @W_INSTANTE = <<<COLUMNA_CONTROL_VERSION>>>
+		FROM <<<NOMBRE-TABLA-FULL>>> 
+		WHERE <<<CAMPOS_PK_NOMBRE_INPUT_WHERE>>>
+			
+		IF (CAST(@W_INSTANTE AS DATETIME2(0)) <> CAST(@I_VERSION AS DATETIME2(0)))
+		BEGIN
+			SELECT @O_RETVAL = -3, @O_RETMSG = 'SQL.10010: <<<NOMBRE-TABLA>>>_DEL: Versión incorrecta'
+			RETURN @O_RETVAL
+		END
+
+		UPDATE [dbo].[<<<NOMBRE-TABLA-FULL>>>]
+		SET <<<CAMPOS_NOMBRE_INPUT>>>
+			<<<INCLUYE-UPD-CONCURRENCIA>>>
+		OUTPUT INSERTED.*
+		WHERE <<<CAMPOS_PK_NOMBRE_INPUT_WHERE>>>
+
+		IF @@rowcount = 0
+		begin
+			SELECT @O_RETVAL = -3, @O_RETMSG = 'SQL.10013: <<<NOMBRE-TABLA>>>_UPD: Registro no pudo ser actualizado'
+			RETURN @O_RETVAL
+		end
+	END TRY
+	BEGIN CATCH
+		if ERROR_NUMBER() = 547 -- Error de Integridad Referencial
+		begin
+			SELECT @O_RETVAL = 1, @O_RETMSG = 'SQL.10005: <<<NOMBRE-TABLA>>>_UPD: Error de Integridad Referencial'
+			RETURN
+		end
+		SET @O_RETMSG = 'SQL.10010: <<<NOMBRE-TABLA>>>_UPD: ' + ERROR_MESSAGE()
+		SET @O_RETVAL = ERROR_NUMBER()
+		RETURN @O_RETVAL
+	END CATCH
+
+	RETURN 0
+END

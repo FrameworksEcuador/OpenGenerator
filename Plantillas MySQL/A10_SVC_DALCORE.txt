@@ -1,0 +1,269 @@
+/********************************************************************************************
+	Archivo         :	dal<<<NOMBRE-TABLA-CAMEL>>>.cs    									
+	Diseñado por	:	FRAMEWORKS CIA LTDA										
+	Módulo			:	<<<NOMBRE-APLICACION>>>												
+	Descripción	    :	Componente de acceso a datos de <<<NOMBRE-TABLA-CAMEL>>> en <<<NOMBRE-NAMESPACE>>> 
+																				
+********************************************************************************************
+	Este programa es parte del paquete de <<<NOMBRE-APLICACION>>> propiedad de Frameworks Cia Ltda.														
+	Su uso no autorizado queda expresamente prohibido asi como					
+	cualquier alteracion o agregado hecho por alguno de sus						
+	usuarios sin el debido consentimiento por escrito de Frameworks Cía. Ltda.	
+********************************************************************************************
+	Fecha de Escritura:	<<<FECHA-CREACION>>>											
+	Autor		  :	<<<AUTOR>>>										
+********************************************************************************************
+	MODIFICACIONES																
+	Fecha		Autor		     Razón										    
+                                                                              
+********************************************************************************************/
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Threading.Tasks;
+using System.Configuration;
+using System.Diagnostics;
+using MySql.Data;
+using MySql.Data.MySqlClient;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+
+namespace <<<NOMBRE-NAMESPACE>>>.DAL
+{
+    /// <summary>
+    /// Administración de <<<NOMBRE-TABLA-CAMEL>>>
+    /// </summary>
+    public class dal<<<NOMBRE-TABLA-CAMEL>>>: dalTransaccion
+    {
+		#region <<<NOMBRE-TABLA-CAMEL>>>
+        /// <summary>
+        /// Agregar un registro a <<<NOMBRE-TABLA-CAMEL>>>
+        /// </summary>
+        /// <param name="<<<NOMBRE-TABLA-CAMEL>>>">El nuevo registro a ser creado</param>
+        /// <param name="resultado">Los datos del resultado obtenidos después de su inserción</param>
+        /// <returns>El resultado de la operación, contiene el código de error generado por la operación de base de datos. Si retorna 0 es OK</returns>
+        public DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>Crear(DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>, out DTO.clsResultado resultado)
+        {
+			resultado = new DTO.clsResultado();
+
+            try
+            {
+                using (MySqlConnection con = new MySqlConnection(strConexion))
+                {
+                    con.Open();
+                    using (MySqlCommand cmd = new MySqlCommand("<<<NOMBRE-TABLA>>>_ADD", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+<<<CAMPOS-DAL-ADD>>>
+
+						cmd.Parameters.AddWithValue("O_RETVAL", 0)).Direction = ParameterDirection.Output;
+		                        cmd.Parameters.AddWithValue("O_RETMSG").Direction = ParameterDirection.Output;
+							  
+						string strFuncionarioTran = BLL.bllTokens.GetLogin(<<<NOMBRE-TABLA-CAMEL>>>.Token);
+                        if (validarTransaccion(strFuncionarioTran, <<<NOMBRE-TABLA-CAMEL>>>, cmd, out resultado))
+                        {
+							using (MySqlDataReader dr = cmd.ExecuteReader())
+							{
+								if (dr.Read())
+								{
+<<<CAMPOS-DAL-RESULTADO-ADD>>>
+								}
+							}
+							resultado.Resultado = Convert.ToInt32(cmd.Parameters["O_RETVAL"].Value);
+							resultado.Mensaje = cmd.Parameters["O_RETMSG"].Value.ToString();
+							<<<NOMBRE-TABLA-CAMEL>>>.Token = BLL.bllTokens.GetToken(strFuncionarioTran);
+						}
+					}
+                    con.Close();
+                }
+            }
+            catch (Exception error)
+            {
+                    Startup.Logger.LogError("Error en DAL <<<NOMBRE-TABLA-CAMEL>>>Crear... " + " Descripción=  " + error.Message + " Stack: " + error.StackTrace, null);
+                    resultado.Resultado = -10;
+                    resultado.Mensaje = ConfigurationBinder.GetValue<String>(Startup.Configuration, "ErrorInternoMensaje");
+            }
+			finally
+            {
+                registrarTransaccion(<<<NOMBRE-TABLA-CAMEL>>>, resultado);
+            }
+            return <<<NOMBRE-TABLA-CAMEL>>>;
+        }
+
+        /// <summary>
+        /// Consulta de <<<NOMBRE-TABLA-CAMEL>>>, puede ser individual (por ID) o con filtros y órdenes.
+        /// </summary>
+        /// <param name="filtro">El filtro indica el modo, página, condiciones y orden de la consulta. Si viene el ID y modo=0, se consulta el registro específico</param>
+        /// <param name="resultado">Contiene el Código, Mensaje y Número de páginas obtenidos como resultados de la consulta</param>
+        /// <returns>Retorna la lista , utilizando una lista o arreglo</returns>
+        public List<DTO.cls<<<NOMBRE-TABLA-CAMEL>>>> <<<NOMBRE-TABLA-CAMEL>>>Consultar(DTO.clsFiltro filtro, out DTO.clsResultado resultado)
+        {
+            List<DTO.cls<<<NOMBRE-TABLA-CAMEL>>>> datos = new List<DTO.cls<<<NOMBRE-TABLA-CAMEL>>>>();
+            resultado = new DTO.clsResultado();
+
+            try
+            {
+                using (MySqlConnection con = new MySqlConnection(strConexion))
+                {
+                    con.Open();
+                    using (MySqlCommand cmd = new MySqlCommand("<<<NOMBRE-TABLA>>>_QRY", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+                        cmd.Parameters.AddWithValue("I_ID", filtro.Id);
+
+                        cmd.Parameters.AddWithValue("I_MODO", filtro.Modo);
+                        cmd.Parameters.AddWithValue("I_FILAS", filtro.Filas);
+                        cmd.Parameters.AddWithValue("I_FILTRO", filtro.Filtro);
+                        cmd.Parameters.AddWithValue("I_ORDEN", filtro.Orden);
+                        cmd.Parameters.AddWithValue("I_IR_A_PAGINA", filtro.Pagina);
+			cmd.Parameters.AddWithValue("O_ROWS", 0);
+                        cmd.Parameters.AddWithValue("O_PAGES", 0);
+                        cmd.Parameters.AddWithValue("O_RETVAL", 0);
+                        cmd.Parameters.AddWithValue("O_RETMSG", "");
+
+			string strFuncionarioTran = BLL.bllTokens.GetLogin(filtro.Token);
+			if (validarTransaccion(strFuncionarioTran, filtro, cmd, out resultado))
+                        {
+							using (SqlDataReader dr = cmd.ExecuteReader())
+							{
+								while (dr.Read())
+								{
+									DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>> = new DTO.cls<<<NOMBRE-TABLA-CAMEL>>>();
+<<<CAMPOS-DAL-RESULTADO-ADD>>>
+									datos.Add(<<<NOMBRE-TABLA-CAMEL>>>);
+								}
+							}
+							resultado.Resultado = Convert.ToInt32(cmd.Parameters["O_RETVAL"].Value);
+							resultado.Mensaje = cmd.Parameters["O_RETMSG"].Value.ToString();
+							resultado.TotalPaginas = (cmd.Parameters["O_PAGES"].Value != DBNull.Value) ? Convert.ToInt32(cmd.Parameters["O_PAGES"].Value) : 0;
+							resultado.TotalRegistros = (cmd.Parameters["O_ROWS"].Value != DBNull.Value) ? Convert.ToInt32(cmd.Parameters["O_ROWS"].Value) : 0;
+							filtro.Token = BLL.bllTokens.GetToken(strFuncionarioTran);
+						}
+                    }
+                    con.Close();
+                }
+            }
+            catch (Exception error)
+            {
+                Startup.Logger.LogError("Error en DAL <<<NOMBRE-TABLA-CAMEL>>>Consultar... " + " Descripción=  " + error.Message + " Stack: " + error.StackTrace, null);
+                resultado.Resultado = -10;
+                resultado.Mensaje = ConfigurationBinder.GetValue<String>(Startup.Configuration, "ErrorInternoMensaje");
+            }
+			finally
+            {
+                registrarTransaccion(datos, resultado);
+            }
+            return datos;
+        }
+
+        /// <summary>
+        /// Actualización de <<<NOMBRE-TABLA-CAMEL>>> por ID
+        /// </summary>
+        /// <param name="<<<NOMBRE-TABLA-CAMEL>>>"><<<NOMBRE-TABLA-CAMEL>>> que se desea actualizar</param>
+        /// <param name="resultado">Obtiene el código y el mensaje de resultado</param>
+        /// <returns>Retorna el código de error de la transacción. Si retorna 0 es OK</returns>
+        public DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>Actualizar(DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>, out DTO.clsResultado resultado)
+        {
+            resultado = new DTO.clsResultado();
+
+            try
+            {
+                using (MySqlConnection con = new MySqlConnection(strConexion))
+                {
+                    con.Open();
+                    using (MySqlCommand cmd = new MySqlCommand("<<<NOMBRE-TABLA>>>_UPD", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+<<<CAMPOS-DAL-ADD>>>
+
+						cmd.Parameters.AddWithValue("O_RETVAL", 0));
+                        cmd.Parameters.AddWithValue("O_RETMSG", ""));
+
+						string strFuncionarioTran = BLL.bllTokens.GetLogin(<<<NOMBRE-TABLA-CAMEL>>>.Token);
+						if (validarTransaccion(strFuncionarioTran, <<<NOMBRE-TABLA-CAMEL>>>, cmd, out resultado))
+                        {
+							using (SqlDataReader dr = cmd.ExecuteReader())
+							{
+								if (dr.Read())
+								{
+<<<CAMPOS-DAL-RESULTADO-ADD>>>
+								}
+							}
+							resultado.Resultado = Convert.ToInt32(cmd.Parameters["O_RETVAL"].Value);
+							resultado.Mensaje = cmd.Parameters["O_RETMSG"].Value.ToString();
+							<<<NOMBRE-TABLA-CAMEL>>>.Token = BLL.bllTokens.GetToken(strFuncionarioTran);
+						}
+                    }
+                    con.Close();
+                }
+            }
+            catch (Exception error)
+            {
+                Startup.Logger.LogError("Error en DAL <<<NOMBRE-TABLA-CAMEL>>>Actualizar... " + " Descripción=  " + error.Message + " Stack: " + error.StackTrace, null);
+                resultado.Resultado = -10;
+                resultado.Mensaje = ConfigurationBinder.GetValue<String>(Startup.Configuration, "ErrorInternoMensaje");
+            }
+			finally
+            {
+                registrarTransaccion(<<<NOMBRE-TABLA-CAMEL>>>, resultado);
+            }
+            return <<<NOMBRE-TABLA-CAMEL>>>;
+        }
+
+        /// <summary>
+        /// Eliminación de <<<NOMBRE-TABLA-CAMEL>>> por ID
+        /// </summary>
+        /// <param name="<<<NOMBRE-TABLA-CAMEL>>>">Registro de <<<NOMBRE-TABLA-CAMEL>>> a ser eliminado</param>
+        /// <param name="resultado">Obtiene el código y el mensaje de resultado</param>
+        /// <returns>Retorna el código de error de la transacción. Si retorna 0 es OK</returns>
+        public int <<<NOMBRE-TABLA-CAMEL>>>Eliminar(DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>, out DTO.clsResultado resultado)
+        {
+            resultado = new DTO.clsResultado();
+
+            try
+            {
+                using (SqlConnection con = new SqlConnection(strConexion))
+                {
+                    con.Open();
+                    using (SqlCommand cmd = new SqlCommand("<<<NOMBRE-TABLA>>>_DEL", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+
+<<<CAMPOS-DAL-DEL>>>
+                        
+                        cmd.Parameters.Add("I_Version", <<<NOMBRE-TABLA-CAMEL>>>.Version));
+                        cmd.Parameters.Add("O_RETVAL", 0));
+                        cmd.Parameters.Add("O_RETMSG", ""));
+
+						string strFuncionarioTran = BLL.bllTokens.GetLogin(<<<NOMBRE-TABLA-CAMEL>>>.Token);
+						if (validarTransaccion(strFuncionarioTran, <<<NOMBRE-TABLA-CAMEL>>>, cmd, out resultado))
+                        {
+							cmd.ExecuteNonQuery();
+							resultado.Resultado = Convert.ToInt32(cmd.Parameters["O_RETVAL"].Value);
+							resultado.Mensaje = cmd.Parameters["O_RETMSG"].Value.ToString();
+							<<<NOMBRE-TABLA-CAMEL>>>.Token = BLL.bllTokens.GetToken(strFuncionarioTran);
+						}
+                    }
+                    con.Close();
+                }
+            }
+            catch (Exception error)
+            {
+                Startup.Logger.LogError("Error en DAL <<<NOMBRE-TABLA-CAMEL>>>Eliminar... " + " Descripción=  " + error.Message + " Stack: " + error.StackTrace, null);
+                resultado.Resultado = -10;
+                resultado.Mensaje = ConfigurationBinder.GetValue<String>(Startup.Configuration, "ErrorInternoMensaje");
+            }
+			finally
+            {
+                registrarTransaccion(resultado, resultado);
+            }
+            return resultado.Resultado;
+        }
+		#endregion <<<NOMBRE-TABLA-CAMEL>>>
+    }
+}

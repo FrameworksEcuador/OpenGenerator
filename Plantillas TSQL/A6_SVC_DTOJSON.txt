@@ -1,0 +1,35 @@
+/****************************************************************************************************
+	Archivo			:	cls<<<NOMBRE-TABLA-CAMEL>>>.cs    									
+	Diseñado por		:	FRAMEWORKS CIA LTDA										
+	Módulo			:	<<<NOMBRE-APLICACION>>>
+	Descripción		:	Datos de <<<NOMBRE-TABLA-CAMEL>>>                     
+																				
+*****************************************************************************************************
+	Este programa es parte del paquete de <<<NOMBRE-APLICACION>>> propiedad de Frameworks Cia Ltda.														
+	Su uso no autorizado queda expresamente prohibido asi como					
+	cualquier alteracion o agregado hecho por alguno de sus						
+	usuarios sin el debido consentimiento por escrito de Frameworks Cía. Ltda.	
+*****************************************************************************************************
+	Fecha de Escritura:	<<<FECHA-CREACION>>>											
+	Autor		  :	<<<AUTOR>>>										
+*****************************************************************************************************
+	MODIFICACIONES																
+	Fecha		Autor		     Razón										    
+                                                                              
+*****************************************************************************************************/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Text.Json.Serialization;
+
+namespace <<<NOMBRE-NAMESPACE>>>.DTO
+{
+	public class cls<<<NOMBRE-TABLA-CAMEL>>>
+	{
+<<<CAMPOS-DTO-JSON>>>      
+
+		[JsonPropertyName("Token")]
+		public String Token { get; set; }
+	}
+}

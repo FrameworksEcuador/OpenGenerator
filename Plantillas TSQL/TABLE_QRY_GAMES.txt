@@ -1,0 +1,164 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+if exists (select * from sysobjects where name = '<<<NOMBRE-TABLA>>>_QRY')
+	drop proc <<<NOMBRE-TABLA>>>_QRY
+go
+
+CREATE PROCEDURE [<<<NOMBRE-TABLA>>>_QRY]
+/***********************************************************************************************
+	Archivo         :	<<<NOMBRE-TABLA>>>_QRY.sql								
+	Diseñado por	:	FRAMEWORKS CIA LTDA										
+	Módulo			:	<<<NOMBRE-NAMESPACE>>>												
+	Descripción	    :	Procedimiento para consulta de <<<NOMBRE-TABLA>>>		
+																				
+***********************************************************************************************
+	Este programa es parte del paquete de <<<NOMBRE-NAMESPACE>>> propiedad			
+	de Frameworks Cia Ltda.														
+	Su uso no autorizado queda expresamente prohibido asi como					
+	cualquier alteracion o agregado hecho por alguno de sus						
+	usuarios sin el debido consentimiento por escrito de Frameworks Cía. Ltda.	
+***********************************************************************************************
+	Fecha de Escritura:	<<<FECHA-CREACION>>>									
+	Autor		  :	<<<AUTOR>>>													
+***********************************************************************************************
+	MODIFICACIONES																
+	Fecha		Autor		     Razón											
+                                                                              
+***********************************************************************************************/
+(	
+	<<<INCLUYE_TRANSACTOR>>>
+	
+	<<<CAMPOS-PK-INPUT-TIPO>>>,	
+
+	----PARÁMETROS PARA PAGINACIÓN
+	@I_MODO			TINYINT = NULL,
+	@I_FILAS		INT = 100,	
+	@I_FILTRO		VARCHAR(2048) = NULL,
+	@I_ORDEN		VARCHAR(2048) = NULL,
+	@I_IR_A_PAGINA	INT = 1,
+	
+	@O_ROWS			INT OUTPUT,
+	@O_PAGES		INT OUTPUT,
+	@O_RETVAL		INT OUTPUT,
+	@O_RETMSG		VARCHAR(MAX) OUTPUT
+)
+AS
+DECLARE
+	-- VARIABLES DE PAGINACIÓN
+	@w_rowcount float,
+	@sql_stmt NVARCHAR(4000),
+	@sql_stmt_count NVARCHAR(4000),
+	@counts int,
+	@ERRORINFO VARCHAR(MAX)
+BEGIN
+
+	SET @O_RETVAL = 0
+	SET @O_RETMSG = ''
+
+	BEGIN TRY
+		-- MODO 0: CONSULTA DE UN REGISTRO POR ID
+		IF @I_MODO = 0
+		BEGIN
+			SELECT 
+				<<<CAMPOS-NOMBRE>>>
+			FROM 
+				[dbo].<<<NOMBRE-TABLA-FULL>>>
+			WHERE
+				<<<CAMPOS_PK_NOMBRE_INPUT_WHERE>>>
+
+			IF @@ROWCOUNT = 0
+			BEGIN
+				exec ERROR_GEN @i_num	 = 20011,
+							   @i_stored = '<<<NOMBRE-TABLA>>>_QRY',
+							   @O_CODIGO = @O_RETVAL out,
+							   @O_MSG = @O_RETMSG out
+				return 1
+			END
+		END
+
+		-- MODO 1: CONSULTA CON FILTROS Y ORDEN DINÁMICOS
+		IF @I_MODO = 1
+		BEGIN
+			-- DEFINICION DE LA SENTENCIA BASE
+			SET @sql_stmt  = 
+			'SELECT 
+				<<<CAMPOS-NOMBRE>>>
+			FROM 
+				[dbo].<<<NOMBRE-TABLA-FULL>>>
+			WHERE
+				<<<CAMPOS_PK_NOMBRE_INPUT_WHERE_CONCAT>>>
+
+			SET @sql_stmt_count = 'SELECT @cnt=COUNT(*) FROM (' + @sql_stmt + ') AS T'
+
+			--AGREGA FILTRO
+			IF @I_FILTRO IS NOT NULL AND @I_FILTRO <> '' 
+			BEGIN
+				-- SI LA SENTENCIA NO INCLUYE CLAUSULA WHERE, USAR ESTA LINEA
+				-- SET @sql_stmt = @sql_stmt + ' WHERE ' + @I_FILTRO + ' '
+				SET @sql_stmt = @sql_stmt + ' AND ' + @I_FILTRO + ' '
+				SET @sql_stmt_count = 'SELECT @cnt=COUNT(*) FROM (' + @sql_stmt + ') AS T'
+			END
+
+			-- OBTIENE EL TOTAL DE REGISTROS PARA LA CONSULTA FINAL
+			EXECUTE sp_executesql 
+				@stmt = @sql_stmt_count,
+				@params = N'@cnt int output',
+				@cnt=@counts OUTPUT;
+				
+			--AGREGA ORDEN
+			IF @I_ORDEN IS NOT NULL AND @I_ORDEN <> ''
+			BEGIN
+				SET @sql_stmt = @sql_stmt + ' ORDER BY ' + @I_ORDEN + ' '
+			END
+			ELSE
+			BEGIN
+				-- ORDEN POR DEFAULT PARA LA PAGINACION
+				SET @sql_stmt = @sql_stmt + ' ORDER BY <<<CAMPOS-PK-NOMBRE>>>' 
+			END
+
+			-- AGREGA SENTENCIAS DE PAGINACION
+			SET @sql_stmt = @sql_stmt + ' OFFSET ((@PageNumber - 1) * @RowspPage) ROWS
+			FETCH NEXT @RowspPage ROWS ONLY'			
+
+			-- EJECUTA LA SENTENCIA
+			EXECUTE sp_executesql 
+				@stmt = @sql_stmt,
+				@params = N'@PageNumber as int, @RowspPage as int',
+				@PageNumber = @I_IR_A_PAGINA,
+				@RowspPage = @I_FILAS;
+
+			IF @@ROWCOUNT = 0
+				BEGIN
+					exec ERROR_GEN @i_num	 = 20011,
+								   @i_stored = '<<<NOMBRE-TABLA>>>_QRY',
+								   @O_CODIGO = @O_RETVAL out,
+								   @O_MSG = @O_RETMSG out
+					return 1
+				END
+			ELSE
+				BEGIN
+					-- ASIGNA EL NUMERO DE FILAS RESULTANTES
+					SET @W_ROWCOUNT = @counts
+				END
+		END
+
+		SET ROWCOUNT 0
+		SET @O_ROWS = @W_ROWCOUNT
+		SET @O_PAGES=CEILING(CAST(@W_ROWCOUNT as decimal)/@I_FILAS)
+		SET @O_RETVAL = 0
+		RETURN 
+
+	END TRY
+	BEGIN CATCH
+		SET @ERRORINFO = CONCAT(ERROR_LINE(),  ' - ' , ERROR_MESSAGE(),  ' - ' ,  ERROR_NUMBER(),  ' - ' ,  
+						ERROR_PROCEDURE(),  ' - ' ,  ERROR_SEVERITY(),  ' - ' , ERROR_STATE(), ' - ', @O_RETVAL, ' - ', @O_RETMSG)
+			<<<LOG-INTERNO-CON-TRANSACTOR>>>
+		SET @O_RETMSG = ERROR_MESSAGE()
+		SET @O_RETVAL = ERROR_NUMBER()
+
+	END CATCH
+	RETURN 0
+END

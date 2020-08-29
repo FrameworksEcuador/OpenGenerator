@@ -1,0 +1,74 @@
+<legend class="titulo-gradiente">Open Generator</legend>
+<div class="form-group row">
+  <div class="col-12 col-md-4 text-lg-right text-md-left">
+    <input [(ngModel)]="autor" placeholder="Autor" title="Autor" class="form-control material fg-input" />
+  </div>
+  <div class="col-12 col-md-4 text-lg-right text-md-left">
+    <input [(ngModel)]="aplicacion" placeholder="Aplicación" title="Aplicación" class="form-control material fg-input" />
+  </div>
+  <div class="col-12 col-md-4 text-lg-right text-md-left">
+    <input [(ngModel)]="namespace" placeholder="Namespace" title="Namespace" class="form-control material fg-input" />
+  </div>
+</div>
+<div class="form-group row">
+  <div class="col-12 col-md-4 text-lg-right text-md-left">
+    <label for="campo_base">Base :</label>
+  </div>
+  <div class="col-12 col-md-4">
+    <select name="selectBase" class="form-control material fg-input select" [(ngModel)]="base" (change)="fnConsultarTablas()">
+      <option *ngFor="let base of bases" [ngValue]="base">{{base}}</option>
+    </select>
+  </div>
+  <div class="col-12 col-md-4 text-lg-right text-md-left">
+    <p-button icon="pi pi-search" (onClick)="fnConsultarBases()" title="Buscar Bases de Datos" label="Buscar Bases" class="float-right" styleClass="boton"></p-button>
+  </div>
+</div>
+
+<div class="form-group row">
+  <div class="col-12 col-md-4 text-lg-right text-md-left">
+    <label for="campo_base">Tabla :</label>
+  </div>
+  <div class="col-12 col-md-4">
+    <select name="selectTabla" class="form-control material fg-input select" [(ngModel)]="tabla">
+      <option *ngFor="let tabla of tablas" [ngValue]="tabla">{{tabla}}</option>
+    </select>
+  </div>
+  <div class="col-12 col-md-4 text-lg-right text-md-left">
+    <p-button icon="pi pi-search" (onClick)="fnConsultarTablas()" title="Buscar Tablas" label="Buscar Tablas" class="float-right" styleClass="boton"></p-button>
+  </div>
+</div>
+
+<div class="form-group row">
+  <div class="col-12 col-md-4 text-lg-right text-md-left">
+    <label for="campo_base">Plantilla :</label>
+  </div>
+  <div class="col-12 col-md-4">
+    <select name="selectPlantilla" class="form-control material fg-input select" [(ngModel)]="plantilla">
+      <option *ngFor="let plantilla of plantillas" [ngValue]="plantilla">{{plantilla}}</option>
+    </select>
+  </div>
+  <div class="col-12 col-md-4 text-lg-right text-md-left">
+    <p-button icon="pi pi-search" (onClick)="fnConsultarPlantillas()" title="Buscar Plantillas" label="Buscar Plantillas" class="float-right" styleClass="boton"></p-button>
+  </div>
+</div>
+
+<div class="form-group row">
+  <div class="col-12 col-md-4 text-lg-right text-md-left">
+    <p-button icon="pi pi-pencil" (onClick)="fnGenerar()" title="Generar" label="Generar Código" class="float-right" styleClass="boton"></p-button>
+  </div>
+  <div class="col-12 col-md-4">
+    <p-button icon="pi pi-copy" (onClick)="fnCopiar(codigo)" title="Copiar" label="Copiar Código" class="float-right" styleClass="boton"></p-button>
+  </div>
+  <div class="col-12 col-md-4 text-lg-right text-md-left">
+    <p-button icon="pi pi-refresh" (onClick)="fnBorrar()" title="Limpiar" label="Limpiar Código" class="float-right" styleClass="boton"></p-button>
+  </div>
+</div>
+
+<fieldset>
+  <legend class="titulo-gradiente">Código Generado</legend>
+  <div class="form-group row">
+    <samp class="col-md-12 col-xs-12">
+      <textarea #codigo id="codigo" [(ngModel)]="codigoFuente" rows="10" class="small col-md-12 col-xs-12"></textarea>
+    </samp>
+  </div>
+</fieldset>

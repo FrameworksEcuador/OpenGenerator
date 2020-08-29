@@ -1,0 +1,270 @@
+/********************************************************************************************
+	Archivo         :	dal<<<NOMBRE-TABLA-CAMEL>>>.cs    									
+	Diseñado por	:	FRAMEWORKS CIA LTDA										
+	Módulo			:	<<<NOMBRE-NAMESPACE>>>												
+	Descripción	    :	Componente de acceso a datos de <<<NOMBRE-TABLA-CAMEL>>> en <<<NOMBRE-NAMESPACE>>> 
+																				
+********************************************************************************************
+	Este programa es parte del paquete de <<<NOMBRE-NAMESPACE>>> propiedad			
+	de Frameworks Cia Ltda.														
+	Su uso no autorizado queda expresamente prohibido asi como					
+	cualquier alteracion o agregado hecho por alguno de sus						
+	usuarios sin el debido consentimiento por escrito de Frameworks Cía. Ltda.	
+********************************************************************************************
+	Fecha de Escritura:	<<<FECHA-CREACION>>>											
+	Autor		  :	<<<AUTOR>>>										
+********************************************************************************************
+	MODIFICACIONES																
+	Fecha		Autor		     Razón										    
+                                                                              
+********************************************************************************************/
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+using System.Configuration;
+using System.Diagnostics;
+
+using System.Data;
+using Sybase.Data.AseClient;
+
+namespace <<<NOMBRE-NAMESPACE>>>.DAL
+{
+    /// <summary>
+    /// Resumen de funcionalidad
+    /// </summary>
+    public class dal<<<NOMBRE-TABLA-CAMEL>>>: dalTransaccion
+    {
+        /// <summary>
+        /// Resumen de funcionalidad
+        /// </summary>
+        /// <param name="<<<NOMBRE-TABLA-CAMEL>>>">El nuevo requerimiento a ser creado</param>
+        /// <param name="resultado">Los datos del resultado obtenidos después de su inserción</param>
+        /// <returns>El resultado de la operación, contiene el código de error generado por la operación de base de datos. Si retorna 0 es OK</returns>
+        public DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>Crear(DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>, out DTO.clsResultado resultado)
+        {
+            string strConexion = ConfigurationManager.ConnectionStrings["<<<CONNECTION-STRING>>>"].ConnectionString;
+            int codTransaccion = 0;
+			resultado = new DTO.clsResultado();
+			
+            try
+            {
+                using (AseConnection con = new AseConnection(strConexion))
+                {
+                    con.Open();
+                    using (AseCommand cmd = new AseCommand("<<<NOMBRE-TABLA-MAY>>>_ADD", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+						cmd.NamedParameters = true;
+						cmd.Parameters.Add(new AseParameter("@I_USUARIO", AseDbType.VarChar, <<<NOMBRE-TABLA>>>.FuncionarioTran.Length, ParameterDirection.Input, false, 0, 0, "", DataRowVersion.Default, <<<NOMBRE-TABLA>>>.FuncionarioTran));
+
+<<<CAMPOS-DAL-ADD>>>
+                    if (validarYregistrar(<<<NOMBRE-TABLA>>>.FuncionarioTran, cmd, out codTransaccion))
+                    {
+                             cmd.Parameters.Add(new AseParameter("@I_TRANSACCION", AseDbType.Integer, -1, ParameterDirection.Input, false, 0, 0, "", DataRowVersion.Default, codTransaccion));
+    
+                        using (AseDataReader dr = cmd.ExecuteReader())
+                        {
+                            if (dr.Read())
+                            {
+<<<CAMPOS-DAL-RESULTADO-ADD>>>
+                            }
+                        }
+                        resultado.Resultado = Convert.ToInt32(cmd.Parameters["@RETVAL"].Value);
+                        resultado.Mensaje = "";
+					}
+                    }
+                    con.Close();
+                }
+            }
+            catch (AseException aseEx)
+            {
+			    RegistrarExceptionAse(aseEx, "Error en DAL RequerimientoCrear... ", <<<NOMBRE-TABLA>>>.FuncionarioTran, codTransaccion, ref resultado);
+            }
+            catch (Exception ex)
+            {
+                RegistrarExceptionGeneral(ex, "Error en DAL RequerimientoCrear...", <<<NOMBRE-TABLA>>>.FuncionarioTran, codTransaccion, ref resultado);
+            }
+            return <<<NOMBRE-TABLA-CAMEL>>>;
+        }
+
+        /// <summary>
+        /// Consulta de <<<NOMBRE-TABLA-CAMEL>>>, puede ser individual (por ID) o con filtros y órdenes.
+        /// </summary>
+        /// <param name="filtro">El filtro indica el modo, página, condiciones y orden de la consulta. Si viene el ID y modo=0, se consulta el registro específico</param>
+        /// <param name="resultado">Contiene el Código, Mensaje y Número de páginas obtenidos como resultados de la consulta</param>
+        /// <returns>Retorna la lista , utilizando una lista o arreglo</returns>
+        public List<DTO.cls<<<NOMBRE-TABLA-CAMEL>>>> <<<NOMBRE-TABLA-CAMEL>>>Consultar(DTO.clsFiltro filtro, out DTO.clsResultado resultado)
+        {
+            string strConexion = ConfigurationManager.ConnectionStrings["<<<CONNECTION-STRING>>>"].ConnectionString;
+            int intRetVal = 0;
+            List<DTO.cls<<<NOMBRE-TABLA-CAMEL>>>> datos = new List<DTO.cls<<<NOMBRE-TABLA-CAMEL>>>>();
+             int codTransaccion = 0;
+
+            try
+            {
+                using (AseConnection con = new AseConnection(strConexion))
+                {
+                    con.Open();
+                    using (AseCommand cmd = new AseCommand("<<<NOMBRE-TABLA-MAY>>>_QRY", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.NamedParameters = true;
+						
+                        cmd.Parameters.Add(new AseParameter("@I_USUARIO", AseDbType.VarChar, filtro.FuncionarioTran.Length, ParameterDirection.Input, false, 0, 0, "", DataRowVersion.Default, filtro.FuncionarioTran));
+						
+                        if (filtro.Id != null || filtro.Id > 0)
+                        cmd.Parameters.Add(new AseParameter("@I_ID", AseDbType.Integer, -1, ParameterDirection.Input, false, 0, 0, "", DataRowVersion.Default, filtro.Id));
+
+                        cmd.Parameters.Add(new AseParameter("@I_MODO", AseDbType.Integer, -1, ParameterDirection.Input, false, 0, 0, "", DataRowVersion.Default, filtro.Modo));
+                        cmd.Parameters.Add(new AseParameter("@I_FILAS", AseDbType.Integer, -1, ParameterDirection.Input, false, 0, 0, "", DataRowVersion.Default, filtro.Filas));
+
+                        if (filtro.Filtro.Length > 0)
+                            cmd.Parameters.Add(new AseParameter("@I_FILTRO", AseDbType.VarChar, filtro.Filtro.Length, ParameterDirection.Input, false, 0, 0, "", DataRowVersion.Default, filtro.Filtro));
+                        if (filtro.Orden.Length > 0)
+                            cmd.Parameters.Add(new AseParameter("@I_ORDEN", AseDbType.VarChar, filtro.Orden.Length, ParameterDirection.Input, false, 0, 0, "", DataRowVersion.Default, filtro.Orden));
+
+                        cmd.Parameters.Add(new AseParameter("@I_PAGINA", AseDbType.Integer, -1, ParameterDirection.Input, false, 0, 0, "", DataRowVersion.Default, filtro.Pagina));
+
+                        cmd.Parameters.Add(new AseParameter("@O_REGISTROS", AseDbType.Integer, -1, ParameterDirection.Output, false, 0, 0, "", DataRowVersion.Default, intRetVal));
+                        cmd.Parameters.Add(new AseParameter("@RETVAL", AseDbType.Integer, -1, ParameterDirection.ReturnValue, false, 0, 0, "", DataRowVersion.Default, 0));
+
+                        using (AseDataReader dr = cmd.ExecuteReader(CommandBehavior.Default))
+                        {
+                            while (dr.Read())
+                            {
+                                DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>> = new DTO.cls<<<NOMBRE-TABLA-CAMEL>>>();
+<<<CAMPOS-DAL-RESULTADO-ADD>>>
+                                datos.Add(<<<NOMBRE-TABLA-CAMEL>>>);
+                            }
+                        }
+                        resultado.Resultado = Convert.ToInt32(cmd.Parameters["@RETVAL"].Value);
+                        resultado.Mensaje = "";
+                        resultado.Registros = (cmd.Parameters["@O_REGISTROS"].Value != DBNull.Value) ? Convert.ToInt32(cmd.Parameters["@O_REGISTROS"].Value) : 0;
+                    }
+					
+                    con.Close();
+                }
+            }
+            catch(AseException aseEx)
+            {
+                RegistrarExceptionAse(aseEx, "Consultar...", filtro.FuncionarioTran, codTransaccion, ref resultado);
+            }
+            catch (Exception ex)
+            {
+                RegistrarExceptionGeneral(ex, "Consultar...", filtro.FuncionarioTran, codTransaccion, ref resultado);
+            }
+             return datos;
+        }
+
+        /// <summary>
+        /// Actualización de <<<NOMBRE-TABLA-CAMEL>>> por ID
+        /// </summary>
+        /// <param name="<<<NOMBRE-TABLA-CAMEL>>>"><<<NOMBRE-TABLA-CAMEL>>> que se desea actualizar</param>
+        /// <param name="resultado">Obtiene el código y el mensaje de resultado</param>
+        /// <returns>Retorna el código de error de la transacción. Si retorna 0 es OK</returns>
+        public DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>Actualizar(DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>, out DTO.clsResultado resultado)
+        {
+            string strConexion = ConfigurationManager.ConnectionStrings["<<<CONNECTION-STRING>>>"].ConnectionString;
+            int codTransaccion = 0;
+            resultado = new DTO.clsResultado();
+
+            try
+            {
+                using (AseConnection con = new AseConnection(strConexion))
+                {
+                    con.Open();
+                    using (AseCommand cmd = new AseCommand("<<<NOMBRE-TABLA-MAY>>>_UPD", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+						cmd.NamedParameters = true;
+                        cmd.Parameters.Add(new AseParameter("@I_USUARIO", AseDbType.VarChar, <<<NOMBRE-TABLA>>>.FuncionarioTran.Length, ParameterDirection.Input, false, 0, 0, "", DataRowVersion.Default, <<<NOMBRE-TABLA>>>.FuncionarioTran));
+                        <<<CAMPOS-DAL-ADD>>>
+                        
+                                          
+                   if (validarYregistrar(<<<NOMBRE-TABLA>>>.FuncionarioTran, cmd, out codTransaccion))
+                    {
+                             cmd.Parameters.Add(new AseParameter("@I_TRANSACCION", AseDbType.Integer, -1, ParameterDirection.Input, false, 0, 0, "", DataRowVersion.Default, codTransaccion));
+    
+                        using (AseDataReader dr = cmd.ExecuteReader())
+                        {
+                            if (dr.Read())
+                            {
+<<<CAMPOS-DAL-RESULTADO-ADD>>>
+                            }
+                        }
+                        resultado.Resultado = Convert.ToInt32(cmd.Parameters["@RETVAL"].Value);
+                        resultado.Mensaje = "";
+                    }
+				   }
+                    con.Close();
+                }
+            }
+            catch (AseException aseEx)
+            {
+                RegistrarExceptionAse(aseEx, "Actualizar...", <<<NOMBRE-TABLA>>>.FuncionarioTran, codTransaccion, ref resultado);
+            }
+            catch (Exception ex)
+            {
+                RegistrarExceptionGeneral(ex, "Actualizar...", <<<NOMBRE-TABLA>>>.FuncionarioTran, codTransaccion, ref resultado);
+            }
+            return <<<NOMBRE-TABLA-CAMEL>>>;
+        }
+
+        /// <summary>
+        /// Eliminación de <<<NOMBRE-TABLA-CAMEL>>> por ID
+        /// </summary>
+        /// <param name="<<<NOMBRE-TABLA-CAMEL>>>">Información de <<<NOMBRE-TABLA-CAMEL>>> a ser eliminado</param>
+        /// <param name="resultado">Obtiene el código y el mensaje de resultado</param>
+        /// <returns>Retorna el código de error de la transacción. Si retorna 0 es OK</returns>
+        public int <<<NOMBRE-TABLA-CAMEL>>>Eliminar(DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>, out DTO.clsResultado resultado)
+        {
+            string strConexion = ConfigurationManager.ConnectionStrings["<<<CONNECTION-STRING>>>"].ConnectionString;
+            int codTransaccion = 0;
+            resultado = new DTO.clsResultado();
+
+            try
+            {
+                using (AseConnection con = new AseConnection(strConexion))
+                {
+                    con.Open();
+                    using (AseCommand cmd = new AseCommand("<<<NOMBRE-TABLA-MAY>>>_DEL", con))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+						 cmd.NamedParameters = true;
+
+<<<CAMPOS-DAL-DEL>>>
+
+	
+			            cmd.Parameters.Add(new AseParameter("@I_VERSION", AseDbType.DateTime , -1, ParameterDirection.Input, false, 0, 0, "", DataRowVersion.Default, <<<NOMBRE-TABLA>>>.Version));                        
+                        cmd.Parameters.Add(new AseParameter("@I_USUARIO", AseDbType.VarChar, <<<NOMBRE-TABLA>>>.FuncionarioTran.Length, ParameterDirection.Input, false, 0, 0, "", DataRowVersion.Default, <<<NOMBRE-TABLA>>>.FuncionarioTran));
+                        cmd.Parameters.Add(new AseParameter("@RETVAL", AseDbType.Integer, -1, ParameterDirection.ReturnValue, false, 0, 0, "", DataRowVersion.Default, 0));
+                       
+
+                        if (validarYregistrar(<<<NOMBRE-TABLA>>>.FuncionarioTran, cmd, out codTransaccion))
+                        {
+						cmd.Parameters.Add(new AseParameter("@I_TRANSACCION", AseDbType.Integer, -1, ParameterDirection.Input, false, 0, 0, "", DataRowVersion.Default, codTransaccion));
+                        cmd.ExecuteNonQuery();
+                        resultado.Resultado = Convert.ToInt32(cmd.Parameters["@RETVAL"].Value);
+                        resultado.Mensaje ="";
+						}
+                    }
+                    con.Close();
+                }
+            }
+
+            catch (AseException aseEx)
+            {
+                RegistrarExceptionAse(aseEx, "Eliminar...", <<<NOMBRE-TABLA>>>.FuncionarioTran, codTransaccion, ref resultado);
+            }
+            catch (Exception ex)
+            {
+                RegistrarExceptionGeneral(ex, "Eliminar...", <<<NOMBRE-TABLA>>>.FuncionarioTran, codTransaccion, ref resultado);
+            }
+            return (int)resultado.Resultado;
+        }
+
+    }
+}

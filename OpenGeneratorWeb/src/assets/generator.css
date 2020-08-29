@@ -1,0 +1,36 @@
+.respdialog {
+  width: 75vw;
+}
+
+@media screen and (max-width: 40em) {
+  .respdialog {
+    width: 95vw;
+  }
+}
+
+.ui-button {
+}
+
+.boton .ui-button-text.ui-clickable {
+  visibility: visible;
+}
+
+@media screen and (max-width: 40em) {
+  .boton .ui-button-text.ui-clickable {
+    visibility: hidden;
+    width: 1em;
+    height: 2em;
+  }
+}
+
+.ui-dialog-content.ui-widget-content {
+  background-color: transparent;
+  border-width: 0px 0px 0px 0px;
+  border-color: transparent;
+  overflow: hidden;
+  overflow-y: hidden !important;
+}
+
+.red-input {
+    border-color: red !important;
+}

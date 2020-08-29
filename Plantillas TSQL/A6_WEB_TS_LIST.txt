@@ -1,0 +1,88 @@
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { GlobalesService } from '../../servicios/globales.service';
+import { FactoryService } from '../../servicios/factory.service';
+
+import { cls<<<NOMBRE-TABLA-CAMEL>>> } from '../../cls/cls<<<NOMBRE-TABLA-CAMEL>>>';
+import { clsFiltro } from '../../cls/clsFiltro';
+
+@Component({
+    selector: 'lista-<<<NOMBRE-TABLA-CAMEL>>>S',
+    templateUrl: './lista<<<NOMBRE-TABLA-CAMEL>>>s.component.html',
+    styleUrls: ['../main.css']
+})
+export class Lista<<<NOMBRE-TABLA-CAMEL>>>sComponent {
+    public registros: cls<<<NOMBRE-TABLA-CAMEL>>>[];
+    public <<<NOMBRE-TABLA-MIN>>>: cls<<<NOMBRE-TABLA-CAMEL>>> = new cls<<<NOMBRE-TABLA-CAMEL>>>();
+    public display: Boolean;
+    public filtro: clsFiltro = new clsFiltro();
+    @Output() fnSeleccionar<<<NOMBRE-TABLA-CAMEL>>> = new EventEmitter<cls<<<NOMBRE-TABLA-CAMEL>>>>();
+
+    constructor(public globales: GlobalesService, private factory: FactoryService, private translate: TranslateService) {
+        this.filtro.Filas = 5;
+		this.filtro.FilaInicial = 0;
+    }
+    fnConsultar() {
+        this.globales.fnMensajeLimpiar();
+        this.filtro.Filtro = '';
+        this.filtro.Modo = 1;
+        if (this.filtro.Condiciones) {
+	<<<CAMPOS-FILTRO>>>
+	    }
+        this.registros = [];
+        this.factory.Ejecutar("<<<NOMBRE-TABLA-CAMEL>>>.svc/<<<NOMBRE-TABLA-CAMEL>>>Consultar", this.filtro)
+            .then((resp: any) => {
+                if (resp.resultado.Resultado == 0) {
+                    this.registros = resp.<<<NOMBRE-TABLA-CAMEL>>>ConsultarResult;
+                    this.filtro.TotalPaginas = resp.resultado.TotalPaginas;
+                    this.filtro.TotalRegistros = resp.resultado.TotalRegistros;
+                } else {
+                    this.globales.fnMensaje(resp.resultado.Mensaje, false);
+                    this.filtro.Pagina = 1;
+                    this.filtro.TotalPaginas = 1;
+                    this.filtro.TotalRegistros = 1;
+                }
+            }).catch(resp => {
+                this.globales.fnMensaje("ERROR." + resp.status + ": " + resp.statusText, false);
+                this.filtro.Pagina = 1;
+                this.filtro.TotalPaginas = 1;
+                this.filtro.TotalRegistros = 1;
+            });
+    }
+    fnPaginar(event) {
+        this.filtro.Filas = event.rows;
+        this.filtro.Pagina = event.page + 1;
+		this.filtro.FilaInicial = (this.filtro.Pagina.valueOf() - 1) * (this.filtro.Filas.valueOf());
+        this.fnConsultar();
+    }
+    fnAbrir() {
+        this.display = true;
+        this.filtro.Pagina = 1;
+		this.filtro.FilaInicial = 0;
+        this.fnConsultar();
+    }
+    fnSeleccionar(reg) {
+        this.display = false;
+        this.fnSeleccionar<<<NOMBRE-TABLA-CAMEL>>>.emit(JSON.parse(JSON.stringify(reg)));
+    }
+    fnCondiciones() {
+        this.filtro.Condiciones = !this.filtro.Condiciones;
+<<<CAMPOS-LIMPIAR>>>
+        this.fnAbrir();
+    }
+    fnOrdenar(campo) {
+        if (this.filtro.Campo != campo) {
+            this.filtro.Campo = campo;
+            this.filtro.Icono = 'pi-caret-up';
+            this.filtro.Orden = campo + ' ASC';
+        }
+        else {
+            switch (this.filtro.Icono) {
+                case "": this.filtro.Icono = 'pi-caret-up'; this.filtro.Orden = campo + ' ASC'; break;
+                case "pi-caret-up": this.filtro.Icono = 'pi-caret-down'; this.filtro.Orden = campo + ' DESC'; break;
+                case "pi-caret-down": this.filtro.Icono = ''; this.filtro.Orden = ''; break;
+            }
+        }
+        this.fnAbrir();
+    }
+}

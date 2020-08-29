@@ -1,0 +1,104 @@
+/****************************************************************************************************
+	Archivo         :	test<<<NOMBRE-TABLA-CAMEL>>>.cs     							            
+	Diseñado por	:	FRAMEWORKS CIA LTDA										
+	Módulo			:	<<<NOMBRE-NAMESPACE>>>  									    
+	Descripción	    :	Test del Web Service de <<<NOMBRE-TABLA-CAMEL>>>     		    
+																				
+****************************************************************************************************
+	Este programa es parte del paquete de <<<NOMBRE-NAMESPACE>>> propiedad			
+	de Frameworks Cia Ltda.														
+	Su uso no autorizado queda expresamente prohibido asi como					
+	cualquier alteracion o agregado hecho por alguno de sus						
+	usuarios sin el debido consentimiento por escrito de Frameworks Cía. Ltda.	
+****************************************************************************************************
+	Fecha de Escritura:	<<<FECHA-CREACION>>>											
+	Autor		  :	<<<AUTOR>>>	
+****************************************************************************************************
+	MODIFICACIONES																
+	Fecha		Autor		     Razón										    
+                                                                              
+****************************************************************************************************/
+
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace <<<NOMBRE-NAMESPACE>>>TST
+{
+	[TestClass]
+	public class <<<NOMBRE-TABLA-CAMEL>>>
+	{
+		[TestMethod]
+		public void <<<NOMBRE-TABLA-CAMEL>>>Acciones()
+		{
+			<<<NOMBRE-TABLA-CAMEL>>>CrearOK();
+			<<<NOMBRE-TABLA-CAMEL>>>ActualizarOK();
+			<<<NOMBRE-TABLA-CAMEL>>>ConsultarOK();
+			<<<NOMBRE-TABLA-CAMEL>>>EliminarOK();
+		}
+
+		public void <<<NOMBRE-TABLA-CAMEL>>>CrearOK()
+		{
+			<<<NOMBRE-TABLA-CAMEL>>>Svc.<<<NOMBRE-TABLA-CAMEL>>>Client svc = new <<<NOMBRE-TABLA-CAMEL>>>Svc.<<<NOMBRE-TABLA-CAMEL>>>Client();
+			<<<NOMBRE-TABLA-CAMEL>>>Svc.cls<<<NOMBRE-TABLA-CAMEL>>> obj<<<NOMBRE-TABLA-CAMEL>>> = new <<<NOMBRE-TABLA-CAMEL>>>Svc.cls<<<NOMBRE-TABLA-CAMEL>>>();
+            
+<<<CAMPOS-TEST-INPUT>>>
+            
+			obj<<<NOMBRE-TABLA-CAMEL>>>.Identificador = "CE5C3FF7-5830-4B27-859D-41E5F61D1207";
+			<<<NOMBRE-TABLA-CAMEL>>>Svc.clsResultado objResultado = new <<<NOMBRE-TABLA-CAMEL>>>Svc.clsResultado();
+			int result = svc.<<<NOMBRE-TABLA-CAMEL>>>Crear(obj<<<NOMBRE-TABLA-CAMEL>>>, out objResultado);
+			Assert.AreEqual(result, 0, "result es diferente de cero: " + result.ToString());
+			Assert.AreEqual(objResultado.Resultado, 0, "Resultado es diferente de cero: " + objResultado.Resultado.ToString());
+			Assert.AreEqual(objResultado.Errores, null, "Se han presentado mensajes de error. Revisar el visor de eventos a las " + DateTime.Now);
+		}
+
+		public void <<<NOMBRE-TABLA-CAMEL>>>ActualizarOK()
+		{
+			<<<NOMBRE-TABLA-CAMEL>>>Svc.<<<NOMBRE-TABLA-CAMEL>>>Client svc = new <<<NOMBRE-TABLA-CAMEL>>>Svc.<<<NOMBRE-TABLA-CAMEL>>>Client();
+			<<<NOMBRE-TABLA-CAMEL>>>Svc.cls<<<NOMBRE-TABLA-CAMEL>>> obj<<<NOMBRE-TABLA-CAMEL>>> = new <<<NOMBRE-TABLA-CAMEL>>>Svc.cls<<<NOMBRE-TABLA-CAMEL>>>();
+            
+<<<CAMPOS-TEST-INPUT>>>
+            
+			obj<<<NOMBRE-TABLA-CAMEL>>>.Identificador = "CE5C3FF7-5830-4B27-859D-41E5F61D1207";
+			<<<NOMBRE-TABLA-CAMEL>>>Svc.clsResultado objResultado = new <<<NOMBRE-TABLA-CAMEL>>>Svc.clsResultado();
+			int result = svc.<<<NOMBRE-TABLA-CAMEL>>>Actualizar(obj<<<NOMBRE-TABLA-CAMEL>>>, out objResultado);
+			Assert.AreEqual(result, 0, "result es diferente de cero: " + result.ToString());
+			Assert.AreEqual(objResultado.Resultado, 0, "Resultado es diferente de cero: " + objResultado.Resultado.ToString());
+			Assert.AreEqual(objResultado.Errores, null, "Se han presentado mensajes de error. Revisar el visor de eventos a las " + DateTime.Now);
+		}
+
+		public void <<<NOMBRE-TABLA-CAMEL>>>ConsultarOK()
+		{
+			<<<NOMBRE-TABLA-CAMEL>>>Svc.<<<NOMBRE-TABLA-CAMEL>>>Client svc = new <<<NOMBRE-TABLA-CAMEL>>>Svc.<<<NOMBRE-TABLA-CAMEL>>>Client();
+			<<<NOMBRE-TABLA-CAMEL>>>Svc.clsFiltro filtro = new <<<NOMBRE-TABLA-CAMEL>>>Svc.clsFiltro();
+			filtro.Modo = 0;
+			filtro.Filas = 10;
+			filtro.Filtro = "";
+			filtro.Orden = "";
+			filtro.Pagina = 1;
+            
+<<<CAMPOS-PK-TEST-INPUT-QRY>>>
+            
+			filtro.Identificador = "CE5C3FF7-5830-4B27-859D-41E5F61D1207";
+			<<<NOMBRE-TABLA-CAMEL>>>Svc.clsResultado objResultado = new <<<NOMBRE-TABLA-CAMEL>>>Svc.clsResultado();
+			<<<NOMBRE-TABLA-CAMEL>>>Svc.cls<<<NOMBRE-TABLA-CAMEL>>>[] result = svc.<<<NOMBRE-TABLA-CAMEL>>>Consultar(filtro, out objResultado);
+			Assert.AreNotEqual(result.Length, 0, "No se han presentado registros en esta consulta");
+			Assert.AreEqual(objResultado.Resultado, 0, "Resultado es diferente de cero: " + objResultado.Resultado.ToString());
+			Assert.AreEqual(objResultado.Errores, null, "Se han presentado mensajes de error. Revisar el visor de eventos a las " + DateTime.Now);
+		}
+
+		public void <<<NOMBRE-TABLA-CAMEL>>>EliminarOK()
+		{
+			<<<NOMBRE-TABLA-CAMEL>>>Svc.<<<NOMBRE-TABLA-CAMEL>>>Client svc = new <<<NOMBRE-TABLA-CAMEL>>>Svc.<<<NOMBRE-TABLA-CAMEL>>>Client();
+			<<<NOMBRE-TABLA-CAMEL>>>Svc.cls<<<NOMBRE-TABLA-CAMEL>>> obj<<<NOMBRE-TABLA-CAMEL>>> = new <<<NOMBRE-TABLA-CAMEL>>>Svc.cls<<<NOMBRE-TABLA-CAMEL>>>();
+            
+<<<CAMPOS-PK-TEST-INPUT>>>
+            
+			obj<<<NOMBRE-TABLA-CAMEL>>>.Identificador = "CE5C3FF7-5830-4B27-859D-41E5F61D1207";
+			<<<NOMBRE-TABLA-CAMEL>>>Svc.clsResultado objResultado = new <<<NOMBRE-TABLA-CAMEL>>>Svc.clsResultado();
+			int result = svc.<<<NOMBRE-TABLA-CAMEL>>>Eliminar(obj<<<NOMBRE-TABLA-CAMEL>>>, out objResultado);
+			Assert.AreEqual(result, 0, "result es diferente de cero: " + result.ToString());
+			Assert.AreEqual(objResultado.Resultado, 0, "Resultado es diferente de cero: " + objResultado.Resultado.ToString());
+			Assert.AreEqual(objResultado.Errores, null, "Se han presentado mensajes de error. Revisar el visor de eventos a las " + DateTime.Now);
+		}
+	}
+}

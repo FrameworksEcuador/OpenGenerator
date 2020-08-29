@@ -1,0 +1,76 @@
+/****************************************************************************** 
+ Stored Procedure: <<<NOMBRE-TABLA>>>_DEL
+ Archivo         : <<<NOMBRE-TABLA>>>_DEL.sql
+ Diseñado por    : FRAMEWORKS CIA LTDA										 
+ Módulo          : <<<NOMBRE-NAMESPACE>>>
+ Descripción     : Procedimiento para eliminar datos de <<<NOMBRE-TABLA>>>
+****************************************************************************** 
+ Este programa es parte del paquete de <<<NOMBRE-NAMESPACE>>> propiedad			
+ de Frameworks Cia Ltda.
+ Su uso no autorizado queda expresamente prohibido asi como	cualquier 
+ alteracion o agregado hecho por alguno de sus	usuarios sin el debido 
+ consentimiento por escrito de Frameworks Cía. Ltda.																					 
+****************************************************************************** 
+ Fecha de escritura: <<<FECHA-CREACION>>>
+ Autor           : <<<AUTOR>>>
+****************************************************************************** 
+ MODIFICACIONES			
+ Fecha	Autor	Razón	
+						
+******************************************************************************/
+use <<<NOMBRE-ESQUEMA>>>
+go
+
+if exists (select * from sysobjects where type = 'P' and name = '<<<NOMBRE-TABLA>>>_DEL')
+	drop proc <<<NOMBRE-TABLA>>>_DEL
+go
+
+CREATE Procedure <<<NOMBRE-TABLA>>>_DEL
+(	
+	@t_ssn			INT,					-- Numero secuencial del sistema 
+	@t_phase		INT,					-- Numero de fase de la transaccion
+	@t_ichannel		VARCHAR(64), 			-- Canal de entrada de la transaccion
+	@t_idispatcher	INT,					-- Numero del despachador asignado
+	@t_idusr		VARCHAR(128), 			-- Identificador del usuario en la sesion
+	@t_ussn			INT,					-- Numero secuencial del usuario - recibo
+	@t_org			VARCHAR(64),			-- Aplicacion de origen de la transaccion
+	@t_filial		VARCHAR(64),			-- Filial de origen
+	@t_office		VARCHAR(64),			-- Oficina de origen
+	@t_term			VARCHAR(32),			-- Terminal de origen
+	@t_rssn 		int=0,					-- Numero Secuencial Remoto
+	@t_sourceserver	VARCHAR(30) = '',		-- Servidor de Origen de la Transaccion
+	@t_targetserver VARCHAR(30) = '' out,	-- Servidor de Destino de la Transaccion
+	@t_reverse		VARCHAR(1) = 'N',		-- Indica si la transaccion es reversa: N=Normal, R=Reversa
+
+	----PARÁMETROS OBLIGATORIOS
+	<<<CAMPOS-PK-INPUT-TIPO>>>,	
+
+	@O_RETVAL		BIGINT OUTPUT,
+	@O_RETMSG		VARCHAR(1024) OUTPUT
+)
+AS
+	SET @O_RETVAL = 0
+	SET @O_RETMSG = ''
+
+	<<<LISTA-TABLAS-DETALLE>>>
+
+	if not exists (select * from <<<NOMBRE-TABLA-FULL>>> where <<<CAMPOS_PK_NOMBRE_INPUT_WHERE>>>)
+	begin
+		exec fw_security..error_qry_par
+		@i_num	 = 111002,
+		@i_stored = '<<<NOMBRE-TABLA>>>_DEL', @o_error = @O_RETVAL out, @o_msg = @O_RETMSG out
+		return 1
+	end
+
+	DELETE <<<NOMBRE-TABLA-FULL>>>
+	WHERE <<<CAMPOS_PK_NOMBRE_INPUT_WHERE>>>
+
+	IF @@error<>0
+	BEGIN	
+		exec fw_security..error_qry_par
+			@i_num		= 114017,
+			@i_stored	= '<<<NOMBRE-TABLA>>>_DEL', @o_error = @O_RETVAL out, @o_msg = @O_RETMSG out
+		return 1
+	END 
+	RETURN 0
+GO

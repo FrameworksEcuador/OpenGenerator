@@ -1,0 +1,121 @@
+/***********************************************************************************************
+	Stored Procedure: <<<NOMBRE-TABLA>>>_QRY
+	Archivo         : <<<NOMBRE-TABLA>>>_QRY.sql
+	Diseñado por	: FRAMEWORKS CIA LTDA
+	Módulo			: <<<NOMBRE-NAMESPACE>>>
+	Descripción	    : Procedimiento para consulta de <<<NOMBRE-TABLA>>>
+			
+***********************************************************************************************
+	Este programa es parte del paquete de <<<NOMBRE-NAMESPACE>>> propiedad
+	de Frameworks Cia Ltda.	
+	Su uso no autorizado queda expresamente prohibido asi como cualquier 
+	alteracion o agregado hecho por alguno de sus usuarios sin el debido 
+	consentimiento por escrito de Frameworks Cía. Ltda.	
+***********************************************************************************************
+	Fecha de Escritura:	<<<FECHA-CREACION>>>
+	Autor		  :	<<<AUTOR>>>	
+***********************************************************************************************
+	MODIFICACIONES	
+	Fecha		Autor		     Razón	
+                 
+***********************************************************************************************/
+use <<<NOMBRE-ESQUEMA>>>
+go
+
+if exists (select * from sysobjects where type = 'P' and name = '<<<NOMBRE-TABLA>>>_QRY')
+	drop proc <<<NOMBRE-TABLA>>>_QRY
+go
+
+CREATE PROCEDURE <<<NOMBRE-TABLA>>>_QRY
+(	
+	@t_ssn			INT,					-- Numero secuencial del sistema 
+	@t_phase		INT,					-- Numero de fase de la transaccion
+	@t_ichannel		VARCHAR(64), 			-- Canal de entrada de la transaccion
+	@t_idispatcher	INT,					-- Numero del despachador asignado
+	@t_idusr		VARCHAR(128), 			-- Identificador del usuario en la sesion
+	@t_ussn			INT,					-- Numero secuencial del usuario - recibo
+	@t_org			VARCHAR(64),			-- Aplicacion de origen de la transaccion
+	@t_filial		VARCHAR(64),			-- Filial de origen
+	@t_office		VARCHAR(64),			-- Oficina de origen
+	@t_term			VARCHAR(32),			-- Terminal de origen
+	@t_rssn 		int=0,					-- Numero Secuencial Remoto
+	@t_sourceserver	VARCHAR(30) = '',		-- Servidor de Origen de la Transaccion
+	@t_targetserver VARCHAR(30) = '' out,	-- Servidor de Destino de la Transaccion
+	@t_reverse		VARCHAR(1) = 'N',		-- Indica si la transaccion es reversa: N=Normal, R=Reversa
+
+	<<<CAMPOS-PK-INPUT-TIPO>>>,	
+
+	----PARÁMETROS PARA PAGINACIÓN
+	@i_modo			TINYINT = NULL,
+	@i_filas		INT = 100,	
+	@i_filtro		VARCHAR(2048) = NULL,
+	@i_orden		VARCHAR(2048) = NULL,
+	@i_ir_a_pagina	INT = 1,
+	
+	
+    @O_PAGES		INT OUTPUT,
+	@O_RETVAL		INT OUTPUT,
+	@O_RETMSG		VARCHAR(1024) OUTPUT
+)
+AS
+BEGIN
+DECLARE
+	-- VARIABLES DE PAGINACIÓN
+    @w_campos	VARCHAR(512),
+	@w_tablas	VARCHAR(512),
+	@w_condi	VARCHAR(512),
+	@w_orden	VARCHAR(512),
+	@w_sql		VARCHAR(4000),
+	@w_sql_cont VARCHAR(4000)
+
+	SET @O_PAGES = 0
+	SET @O_RETVAL = 0
+	SET @O_RETMSG = ''
+
+	-- MODO 0: CONSULTA DE UN REGISTRO POR ID
+	IF @i_modo = 0
+	BEGIN
+		SELECT <<<CAMPOS-NOMBRE>>>
+		FROM <<<NOMBRE-TABLA-FULL>>>
+		WHERE <<<CAMPOS_PK_NOMBRE_INPUT_WHERE>>>
+
+		IF @@ROWCOUNT = 0
+		BEGIN
+			EXEC fw_security..error_qry_par
+				@i_num		= 111012,
+				@i_stored	= '<<<NOMBRE-TABLA>>>_qry', @o_error = @O_RETVAL out, @o_msg = @O_RETMSG out
+			return 1
+		END
+	END
+
+	-- MODO 1: CONSULTA DE UNA LISTA DE REGISTROS PAGINADA, CON FILTRO Y ORDEN. DINAMICA
+	IF @i_modo = 1
+	BEGIN
+		SET @w_campos = '<<<CAMPOS-NOMBRE>>>'
+		SET @w_tablas = ' FROM <<<NOMBRE-TABLA-FULL>>> '
+		SET @w_condi  = '' 
+		IF @i_filtro is not NULL AND @i_filtro <> '' SET @w_condi = @w_condi + ' WHERE ' + @i_filtro
+		SET @w_orden = ' ORDER BY <<<CAMPOS-PK-NOMBRE>>>'
+		IF @i_orden is not NULL AND @i_orden <> '' SET @w_orden = ' ORDER BY ' + @i_orden
+		SET @w_sql =' SELECT ID_REGISTRO=IDENTITY(10), ' + @w_campos + 
+					' INTO #TABLA ' + @w_tablas + @w_condi + @w_orden +
+					' SELECT ' + @w_campos + ' FROM #TABLA ' +
+					' WHERE ID_REGISTRO <= @i_ir_a_pagina * @i_filas ' +
+					' AND ID_REGISTRO > (@i_ir_a_pagina - 1) * @i_filas '
+		EXECUTE ( @w_sql )
+		IF @@ROWCOUNT = 0
+		BEGIN
+			EXEC fw_security..error_qry_par
+				@i_num		= 111012,
+				@i_stored	= '<<<NOMBRE-TABLA>>>_QRY', @o_error = @O_RETVAL out, @o_msg = @O_RETMSG out
+			RETURN 1
+		END
+		ELSE
+		BEGIN
+			SET @w_sql_cont = ' SELECT @O_PAGES = CEILING(CAST(COUNT(*)as numeric(15,2))/@i_filas) ' +
+								@w_tablas + @w_condi
+			EXEC ( @w_sql_cont )
+		END
+	END
+	RETURN 0
+END

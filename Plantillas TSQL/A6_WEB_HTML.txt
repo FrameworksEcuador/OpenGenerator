@@ -1,0 +1,40 @@
+<article>
+	<div class="ui-corner-all ui-g-12">
+        <div class="ui-g-12">
+            <div class="ui-g">
+                <div class="ui-g-12 btns">
+                    <button type="button" class="btn btn-info fa fa-database" (click)="lista.fnAbrir()" style="float: right; margin-right: 2px;"><span class="d-none d-md-inline-block">&nbsp;Consultar</span></button>
+                    <button type="button" class="btn btn-info fa fa-pencil" (click)="fnGrabar()" [disabled]="fnDeshabilitarGrabar()" style="float: right; margin-right: 2px;"><span class="d-none d-md-inline-block">&nbsp;Grabar</span></button>
+                    <button type="button" class="btn btn-info fa fa-minus" (click)="fnEliminar()" [disabled]="fnDeshabilitarEliminar()" style="float: right; margin-right: 2px;"><span class="d-none d-md-inline-block">&nbsp;Eliminar</span></button>
+                    <button type="button" class="btn btn-info fa fa-eraser" (click)="fnLimpiar()" style="float: right; margin-right: 2px;"><span class="d-none d-md-inline-block">&nbsp;Limpiar</span></button>
+                </div>
+            </div>
+            
+        </div>
+        <div style="clear:both"></div>
+    </div>
+    <div style="clear:both"></div>
+
+    <div class="uk-card uk-card-default">
+
+        <div class="ui-g-12">
+	<<<CAMPOS-WEB-HTML>>>
+            <div class="ui-g ui-g-12 ui-md-6">
+                <div class="ui-g-12" style="text-align: right; font-size:xx-small">{{<<<NOMBRE-TABLA-MIN>>>.Version | date: 'yyyy/MM/dd HH:mm:ss'}}</div>
+            </div>
+
+        </div>
+
+        <p-tabView *ngIf="<<<NOMBRE-TABLA-MIN>>>.Version">
+            <!--<p-tabPanel header="Componente" [selected]="true" style="background-color: green !important" >
+                <componente [<<<NOMBRE-TABLA-MIN>>>]="<<<NOMBRE-TABLA-MIN>>>"></componente>
+            </p-tabPanel>-->
+        </p-tabView>
+
+
+    </div>
+
+
+</article>
+
+<lista-<<<NOMBRE-TABLA-MIN>>>s #lista (fnSeleccionar<<<NOMBRE-TABLA-CAMEL>>>)="fnSeleccionar($event)"></lista-<<<NOMBRE-TABLA-MIN>>>s>

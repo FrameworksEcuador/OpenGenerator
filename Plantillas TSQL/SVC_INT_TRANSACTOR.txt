@@ -1,0 +1,47 @@
+/**************************************************************************************************************
+	Archivo         :	I<<<NOMBRE-TABLA-CAMEL>>>.cs  					    		
+	Diseñado por	:	FRAMEWORKS CIA LTDA										
+	Módulo			:	<<<NOMBRE-NAMESPACE>>>									
+	Descripción	    :	Interface del web service de <<<NOMBRE-TABLA-CAMEL>>> CON TRANSACTOR  
+																				
+**************************************************************************************************************
+	Este programa es parte del paquete de <<<NOMBRE-NAMESPACE>>> propiedad			
+	de Frameworks Cia Ltda.														
+	Su uso no autorizado queda expresamente prohibido asi como					
+	cualquier alteracion o agregado hecho por alguno de sus						
+	usuarios sin el debido consentimiento por escrito de Frameworks Cía. Ltda.	
+**************************************************************************************************************
+	Fecha de Escritura:	<<<FECHA-CREACION>>>									
+	Autor		  :	<<<AUTOR>>>												
+**************************************************************************************************************
+	MODIFICACIONES																
+	Fecha		Autor		     Razón										    
+                                                                              
+**************************************************************************************************************/
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.ServiceModel;
+using System.Text;
+
+namespace <<<NOMBRE-NAMESPACE>>>.SVC
+{
+    [ServiceContract]
+    public interface I<<<NOMBRE-TABLA-CAMEL>>>
+    {
+        [OperationContract]
+        DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>Crear(DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>, out DTO.clsResultado resultado);
+
+        [OperationContract]
+        List<DTO.cls<<<NOMBRE-TABLA-CAMEL>>>> <<<NOMBRE-TABLA-CAMEL>>>Consultar(DTO.clsFiltro filtro, out DTO.clsResultado resultado);
+
+        [OperationContract]
+        DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>Actualizar(DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>, out DTO.clsResultado resultado);
+
+        [OperationContract]
+        int <<<NOMBRE-TABLA-CAMEL>>>Eliminar(DTO.cls<<<NOMBRE-TABLA-CAMEL>>> <<<NOMBRE-TABLA-CAMEL>>>, out DTO.clsResultado resultado);
+
+    }
+}

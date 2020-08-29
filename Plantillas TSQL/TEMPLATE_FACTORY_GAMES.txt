@@ -1,0 +1,19 @@
+/////////////////////////////////////////
+/// FACTORY DE <<<NOMBRE-TABLA-CAMEL>>>
+/////////////////////////////////////////
+
+app.factory('fac<<<NOMBRE-TABLA-CAMEL>>>', function ($http, facGenerica) {
+    return {
+		// Creación del registro de <<<NOMBRE-TABLA-CAMEL>>> 
+		<<<NOMBRE-TABLA-CAMEL>>>Crear: function (<<<NOMBRE-TABLA-CAMEL>>>, callbackOk, callbackErr) { facGenerica.Ejecutar(<<<NOMBRE-TABLA-CAMEL>>> , callbackOk, callbackErr, 'api/api<<<NOMBRE-TABLA-CAMEL>>>.svc/<<<NOMBRE-TABLA-CAMEL>>>Crear'); },
+		
+		// Actualización del registro de <<<NOMBRE-TABLA-CAMEL>>> 
+		<<<NOMBRE-TABLA-CAMEL>>>Actualizar: function (<<<NOMBRE-TABLA-CAMEL>>>, callbackOk, callbackErr) { facGenerica.Ejecutar(<<<NOMBRE-TABLA-CAMEL>>> , callbackOk, callbackErr, 'api/api<<<NOMBRE-TABLA-CAMEL>>>.svc/<<<NOMBRE-TABLA-CAMEL>>>Actualizar'); },
+		
+		// Eliminación del registro de <<<NOMBRE-TABLA-CAMEL>>> 
+		<<<NOMBRE-TABLA-CAMEL>>>Eliminar: function (<<<NOMBRE-TABLA-CAMEL>>>, callbackOk, callbackErr) { facGenerica.Ejecutar(<<<NOMBRE-TABLA-CAMEL>>> , callbackOk, callbackErr, 'api/api<<<NOMBRE-TABLA-CAMEL>>>.svc/<<<NOMBRE-TABLA-CAMEL>>>Eliminar'); },
+	
+        // Consulta de <<<NOMBRE-TABLA-CAMEL>>> 
+        <<<NOMBRE-TABLA-CAMEL>>>Consultar: function (filtro, callbackOk, callbackErr) { facGenerica.Ejecutar(filtro, callbackOk, callbackErr, 'api/api<<<NOMBRE-TABLA-CAMEL>>>.svc/<<<NOMBRE-TABLA-CAMEL>>>Consultar'); }
+    }
+});

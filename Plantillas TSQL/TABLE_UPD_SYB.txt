@@ -1,0 +1,81 @@
+/*******************************************************************************************
+	Archivo         :	<<<NOMBRE-TABLA-MAY>>>_UPD.sql								
+	Diseñado por	:	FRAMEWORKS CIA LTDA										
+	Módulo			:	<<<NOMBRE-NAMESPACE>>>								
+	Descripción	    :	Procedimiento para actualización en <<<NOMBRE-TABLA>>>	
+																				
+*******************************************************************************************
+	Este programa es parte del paquete de <<<NOMBRE-NAMESPACE>>> propiedad			
+	de Frameworks Cia Ltda.														
+	Su uso no autorizado queda expresamente prohibido asi como					
+	cualquier alteracion o agregado hecho por alguno de sus						
+	usuarios sin el debido consentimiento por escrito de Frameworks Cía. Ltda.	
+*******************************************************************************************
+	Fecha de Escritura:	<<<FECHA-CREACION>>>									
+	Autor		  :	<<<AUTOR>>>													
+*******************************************************************************************
+	MODIFICACIONES																
+	Fecha		Autor		     Razón											
+                                                                              
+*******************************************************************************************/
+if exists (select * from sysobjects where name = '<<<NOMBRE-TABLA-MAY>>>_UPD')
+	drop proc <<<NOMBRE-TABLA-MAY>>>_UPD
+go
+
+CREATE PROCEDURE [dbo].[<<<NOMBRE-TABLA-MAY>>>_UPD]
+(		
+	@I_USUARIO	   VARCHAR(64),
+	@I_TRANSACCION INT,
+	@I_VERSION	   DATETIME = NULL,
+	<<<CAMPOS-INPUT-TIPO-MAY>>>
+	
+)
+AS
+BEGIN
+	DECLARE 
+		@W_VERSION DATETIME
+BEGIN TRAN
+		
+	
+		SELECT 
+			@W_VERSION = <<<INCLUYE-UPD-CONCURRENCIA-CAMPO>>>
+		FROM 
+			<<<NOMBRE-TABLA-FULL>>> 
+		WHERE 
+			<<<CAMPOS_PK_NOMBRE_INPUT_WHERE_MAY>>>
+
+
+		IF @W_VERSION <> @I_VERSION 
+		BEGIN
+             EXEC ERROR_GEN @I_USUARIO, @I_TRANSACCION, 20007, '<<<NOMBRE-TABLA-MAY>>>_UPD'
+		     return 1
+		END
+		
+
+		UPDATE [<<<NOMBRE-TABLA-FULL>>>]
+		SET 				
+			<<<CAMPOS_NOMBRE_INPUT_MAY>>>
+			<<<INCLUYE-UPD-CONCURRENCIA>>>
+		WHERE 
+			<<<CAMPOS_PK_NOMBRE_INPUT_WHERE_MAY>>>
+
+		IF @@rowcount = 0
+		begin
+  	
+		     EXEC ERROR_GEN @I_USUARIO, @I_TRANSACCION, 20004, '<<<NOMBRE-TABLA-MAY>>>_UPD'
+		     return 1
+			
+        END 
+		
+		SELECT 
+				<<<CAMPOS-NOMBRE>>>
+				<<<INCLUYE-ADD-CONCURRENCIA-CAMPO>>>
+		FROM 
+				<<<NOMBRE-TABLA-FULL>>>
+		WHERE
+				<<<CAMPOS_PK_NOMBRE_INPUT_WHERE_MAY>>>
+COMMIT TRAN
+
+	RETURN 0
+END
+GO
